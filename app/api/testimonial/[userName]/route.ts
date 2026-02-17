@@ -1,43 +1,48 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import cloudinary from "@/lib/cloudinary";
 
-// POST /api/testimonial/[userName]
 export async function POST(
   req: Request,
   { params }: { params: { userName: string } },
 ) {
   try {
-    const { userName } = params;
+    const { userName } = await params;
+
     if (!userName) {
       return NextResponse.json(
-        { error: "Username is required in URL" },
+        { error: "Username is required" },
         { status: 400 },
       );
     }
 
-    const body = await req.json();
+    const pageOwner = await prisma.user.findUnique({
+      where: { userName },
+    });
 
+    if (!pageOwner) {
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+    }
+
+    const body = await req.json();
     const {
-      userId,
       name,
       feedback,
       stars,
       socialType,
       socialLink,
-      audioUrl,
-      avatarUrl,
+      audioUrl, // blob URL from frontend (useless)
+      avatarUrl, // base64 string from frontend (too big)
       company,
     } = body;
 
-    //* Validate required fields
-    if (!userId || !name || !feedback || !stars || !socialType || !socialLink) {
+    if (!name || !feedback || !stars || !socialType || !socialLink) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 },
       );
     }
 
-    // Validate stars range
     if (stars < 1 || stars > 5) {
       return NextResponse.json(
         { error: "Stars must be between 1 and 5" },
@@ -45,25 +50,46 @@ export async function POST(
       );
     }
 
-    //! Verify userId exists and matches the userName
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
+    // Upload avatar to Cloudinary if it's a base64 string
+    let finalAvatarUrl = `https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(name)}`;
 
-    if (!user || user.userName !== userName) {
-      return NextResponse.json({ error: "Invalid user" }, { status: 404 });
+    if (avatarUrl && avatarUrl.startsWith("data:image")) {
+      try {
+        const uploadedAvatar = await cloudinary.uploader.upload(avatarUrl, {
+          folder: "testimonialhub/avatars",
+          transformation: [
+            { width: 200, height: 200, crop: "fill", gravity: "face" },
+            { quality: "auto", fetch_format: "auto" },
+          ],
+        });
+        finalAvatarUrl = uploadedAvatar.secure_url;
+      } catch (err) {
+        console.error("Avatar upload failed:", err);
+        // fallback to dicebear (already set above)
+      }
     }
 
-    const finalAvatarUrl =
-      avatarUrl ||
-      `https://api.dicebear.com/9.x/open-peeps/svg?seed=${encodeURIComponent(
-        name,
-      )}`;
+    // Upload audio to Cloudinary if it exists
+    // But blob URLs can't be uploaded from backend (they're browser-only)
+    // So frontend needs to send base64 audio instead (see frontend fix below)
+    let finalAudioUrl = null;
+
+    if (audioUrl && audioUrl.startsWith("data:audio")) {
+      try {
+        const uploadedAudio = await cloudinary.uploader.upload(audioUrl, {
+          folder: "testimonialhub/audio",
+          resource_type: "video", // Cloudinary uses "video" for audio files
+        });
+        finalAudioUrl = uploadedAudio.secure_url;
+      } catch (err) {
+        console.error("Audio upload failed:", err);
+        finalAudioUrl = null;
+      }
+    }
 
     const isVerifiedByOwner =
       !!socialLink && ["linkedin", "twitter", "instagram"].includes(socialType);
 
-    //! Create testimonial
     const testimonial = await prisma.testimonial.create({
       data: {
         name,
@@ -71,11 +97,11 @@ export async function POST(
         avatarUrl: finalAvatarUrl,
         feedback,
         stars,
-        audioUrl: audioUrl ?? null,
+        audioUrl: finalAudioUrl,
         socialType,
         socialLink,
-        userId,
-        isVerifiedByOwner,// auto
+        userId: pageOwner.id,
+        isVerifiedByOwner,
       },
     });
 

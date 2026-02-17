@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: { userName: string } },
 ) {
   try {
-    const { userName } = params;
+    const { userName } = await params;
 
     if (!userName) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function GET(
     const testimonials = await prisma.testimonial.findMany({
       where: {
         userId: user.id,
-        isVerifiedByOwner: true, // only verified testimonials
+        isVerifiedByOwner: true,
       },
       orderBy: { createdAt: "desc" },
       select: {
@@ -41,6 +41,7 @@ export async function GET(
         audioUrl: true,
         socialType: true,
         socialLink: true,
+        isVerifiedByOwner: true,
         createdAt: true,
       },
     });
@@ -50,18 +51,25 @@ export async function GET(
     const avgRating =
       testimonials.length > 0 ? totalStars / testimonials.length : 0;
 
+    const verifiedCount = testimonials.filter(
+      (t) => t.isVerifiedByOwner,
+    ).length;
+
     //! Return to frontend
     return NextResponse.json({
       user: {
         id: user.id,
         name: user.name,
         userName: user.userName,
+        tagLine: user.tagLine,
+        customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
       },
       testimonials,
       totalTestimonials: testimonials.length,
-      avgRating: parseFloat(avgRating.toFixed(1)), // e.g., 4.3
+      avgRating: parseFloat(avgRating.toFixed(1)),
+      verifiedCount: verifiedCount,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);

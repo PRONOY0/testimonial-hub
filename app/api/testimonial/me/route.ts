@@ -2,18 +2,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { firebaseAdmin } from "@/lib/firebase-admin";
+import { cookies } from "next/headers";
 
 export async function GET(req: Request) {
   try {
-    const authHeader = req.headers.get("authorization");
+    const session = (await cookies()).get("session")?.value;
 
-    if (!authHeader?.startsWith("Bearer ")) {
+    if (!session) {
       return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
     }
 
-    const token = authHeader.split("Bearer ")[1];
-
-    const decoded = await firebaseAdmin.auth().verifyIdToken(token);
+    const decoded = await firebaseAdmin
+      .auth()
+      .verifySessionCookie(session, true);
 
     const { uid } = decoded;
 
@@ -57,7 +58,7 @@ export async function GET(req: Request) {
         verifiedCount,
         avgRating: Number(avgRating.toFixed(1)),
       },
-      testimonials,
+      testimonials: testimonials,
     });
   } catch (error) {
     console.error("Auth sync error: at /me", error);

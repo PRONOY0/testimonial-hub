@@ -29,17 +29,20 @@ export async function POST(req: Request) {
     }
 
     const token = authHeader.split("Bearer ")[1];
-
     const decoded = await firebaseAdmin.auth().verifyIdToken(token);
-
     const { uid, email, name, picture } = decoded;
+
+    if (!email) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
+    }
 
     const existingUser = await prisma.user.findUnique({
       where: { id: uid },
     });
 
-
-    const userName = existingUser ? existingUser.userName : await generateUniqueUsername(name ?? email?.split("@")[0]);
+    const userName = existingUser
+      ? existingUser.userName
+      : await generateUniqueUsername(name ?? email?.split("@")[0]);
 
     if (!email) {
       return NextResponse.json(
@@ -57,7 +60,10 @@ export async function POST(req: Request) {
       update: {
         email,
         name,
-        avatarUrl: picture,
+        ...((!existingUser?.avatarUrl ||
+          existingUser.avatarUrl === picture) && {
+          avatarUrl: picture,
+        }),
       },
       create: {
         id: uid,
@@ -68,10 +74,31 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ user });
+    const response = NextResponse.json({ user });
+
+    const expiresIn = 60 * 60 * 24 * 7 * 1000;
+    const sessionCookie = await firebaseAdmin
+      .auth()
+      .createSessionCookie(token, { expiresIn });
+
+    response.cookies.set("session", sessionCookie, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: expiresIn / 1000,
+    });
+
+    return response;
   } catch (error) {
     console.error("Auth sync error:", error);
 
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 }
+
+// 1. User login/signup -> we send token from frontend
+// 2. We extract token -> verify it exist or not -> then verify it token  is correct by using firebaseAdmin
+// 3. Then we extract uid and verify it in db if exist or not (login) and if doesn't exist we create new user (signup)
+// 4. Then create a sessionCookie a function provided by firebaseAdmin to create a session cookie which can be used to create session cookie nd we can use verifySessionCookie to verify the cookie everytime instead of sending the token id from frontend every time nd verifying it every time, also the token id expiry time is 1hr.
+// 5. This way it's more secure and Server handling the verification only client side no need to interfare each time.
