@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Star, Mic, Image as ImageIcon, Linkedin, Twitter, Instagram,
+  Star, Mic, Image as ImageIcon, Linkedin, Instagram,
   Check, Upload, Play, Square, RotateCcw, Pause, Trash2, AlertCircle, Loader2
 } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { StepProps } from './types';
 import Link from 'next/link';
 import { TestimonialCard } from '@/components/TestimonialCard';
+import { BsTwitterX } from 'react-icons/bs';
 
 export const shakeVariant = {
   shake: {
@@ -444,7 +445,7 @@ export const VerificationStep: React.FC<StepProps> = ({ formData, updateField, e
             )}
           >
             {type === 'linkedin' && <Linkedin className="w-6 h-6" />}
-            {type === 'twitter' && <Twitter className="w-6 h-6" />}
+            {type === 'twitter' && <BsTwitterX className="w-6 h-6" />}
             {type === 'instagram' && <Instagram className="w-6 h-6" />}
             <span className="capitalize text-sm font-medium">{type}</span>
           </button>
@@ -468,7 +469,7 @@ export const VerificationStep: React.FC<StepProps> = ({ formData, updateField, e
           />
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none">
             {formData.socialType === 'linkedin' && <Linkedin className="w-5 h-5" />}
-            {formData.socialType === 'twitter' && <Twitter className="w-5 h-5" />}
+            {formData.socialType === 'twitter' && <BsTwitterX className="w-4 h-4" />}
             {formData.socialType === 'instagram' && <Instagram className="w-5 h-5" />}
           </div>
           {!errors.socialLink && formData.socialLink.length > 10 && (
@@ -511,8 +512,8 @@ export const ReviewStep: React.FC<StepProps> = ({ formData, onNext, isSubmitting
             avatarUrl: formData.avatarPreview || '',
             stars: formData.rating,
             feedback: formData.feedback,
-            verified: true,
-            date: 'Just now',
+            isVerifiedByOwner: true,
+            createdAt: new Date().toLocaleString(),
             socialLink: formData.socialLink,
             audioUrl: formData.audioUrl || (formData.audioFile ? URL.createObjectURL(formData.audioFile) : '')
           }}
@@ -548,7 +549,7 @@ export const SuccessStep: React.FC<{ username?: string }> = ({ username }) => (
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", duration: 0.8, delay: 0.2 }}
-        className="w-24 h-24 rounded-full bg-gradient-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center border-2 border-green-500/50 text-green-500 z-10 relative shadow-[0_0_50px_rgba(34,197,94,0.3)]"
+        className="w-24 h-24 rounded-full bg-linear-to-br from-green-500/20 to-emerald-500/20 flex items-center justify-center border-2 border-green-500/50 text-green-500 z-10 relative shadow-[0_0_50px_rgba(34,197,94,0.3)]"
       >
         <Check className="w-12 h-12" strokeWidth={3} />
       </motion.div>
@@ -595,7 +596,7 @@ export const SuccessStep: React.FC<{ username?: string }> = ({ username }) => (
       transition={{ delay: 0.8 }}
     >
       <Link href="/">
-        <Button className="px-8 h-12 rounded-full">Back to Home</Button>
+        <Button className="px-8 h-12 rounded-full py-2">Back to Home</Button>
       </Link>
     </motion.div>
   </div>

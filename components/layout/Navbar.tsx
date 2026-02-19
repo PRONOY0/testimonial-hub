@@ -39,7 +39,7 @@ export const Navbar: React.FC = () => {
                   {/* Settings Button */}
                   <button
                     onClick={() => setSettingsOpen(true)}
-                    className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors"
+                    className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors cursor-pointer"
                     title="Settings"
                   >
                     <Settings className="w-5 h-5" />

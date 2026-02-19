@@ -51,6 +51,7 @@ export async function GET(req: Request) {
         name: userExist.name,
         email: userExist.email,
         userName: userExist.userName,
+        location: userExist.location,
         avatarUrl: userExist.avatarUrl,
       },
       stats: {

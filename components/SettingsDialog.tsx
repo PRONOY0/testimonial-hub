@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera } from 'lucide-react';
 import axios from 'axios';
+import { Loader } from './Loader';
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -18,6 +19,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     const [loading, setLoading] = useState(false);
     const [saved, setSaved] = useState(false);
     const [fetching, setFetching] = useState(false);
+    const [location, setLocation] = useState('');
 
     useEffect(() => {
         if (isOpen && !fetching) {
@@ -32,6 +34,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
             setTagline(res.data.user.tagLine || '');
             setCustomUrl(res.data.user.customUrl || '');
             setAvatarPreview(res.data.user.avatarUrl || '');
+            setLocation(res.data.user.location || '');
         } catch (error) {
             console.error('Failed to fetch settings:', error);
         } finally {
@@ -71,7 +74,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
             const res = await axios.patch('/api/user', {
                 tagLine: tagline,
                 customUrl: customUrl,
-                avatarUrl: avatarBase64, // Send base64 or null
+                avatarUrl: avatarBase64,
+                location: location,
             });
 
             console.log('Saved:', res.data.user);
@@ -94,6 +98,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         setSaved(false);
         setLoading(false);
         setAvatarFile(null);
+        setLocation('');
         onClose();
     };
 
@@ -207,6 +212,21 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                         </p>
                                     </div>
 
+                                    {/* Location */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                            Location
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={location}
+                                            onChange={(e) => setLocation(e.target.value)}
+                                            placeholder="USA"
+                                            maxLength={100}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-colors"
+                                        />
+                                    </div>
+
                                     {/* Save Button */}
                                     <motion.button
                                         whileHover={{ scale: 1.02 }}
@@ -214,11 +234,20 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                         onClick={handleSave}
                                         disabled={loading}
                                         className={`w-full py-3 rounded-xl font-medium transition-all ${saved
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-white text-black hover:bg-white/90'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-white text-black hover:bg-white/90'
                                             }`}
                                     >
-                                        {loading ? 'Saving...' : saved ? 'Saved ✓' : 'Save Changes'}
+                                        {
+                                            loading ? 
+                                            (
+                                                <Loader/>
+                                            ) 
+                                            : 
+                                            (
+                                                saved ? 'Saved!' : 'Save Changes'
+                                            )
+                                        }
                                     </motion.button>
                                 </div>
                             )}

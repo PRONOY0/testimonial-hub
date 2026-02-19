@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   req: Request,
-  { params }: { params: { userName: string } }
+  { params }: { params: { userName: string } },
 ) {
   try {
     const { userName } = await params;
@@ -11,7 +11,7 @@ export async function GET(
     if (!userName) {
       return NextResponse.json(
         { error: "Username is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -26,10 +26,7 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Calculate stats
@@ -40,7 +37,7 @@ export async function GET(
           totalTestimonials
         : 0;
     const verifiedCount = user.testimonials.filter(
-      (t) => t.isVerifiedByOwner
+      (t) => t.isVerifiedByOwner,
     ).length;
 
     // Return clean API response
@@ -51,6 +48,7 @@ export async function GET(
         avatarUrl: user.avatarUrl,
         tagLine: user.tagLine,
         customUrl: user.customUrl,
+        location: user.location,
       },
       stats: {
         totalTestimonials,
@@ -75,7 +73,7 @@ export async function GET(
     console.error("Public API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

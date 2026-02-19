@@ -60,7 +60,7 @@ export async function PATCH(req: Request) {
     const { uid } = decoded;
 
     const body = await req.json();
-    const { tagLine, customUrl, avatarUrl } = body;
+    const { tagLine, customUrl, avatarUrl, location } = body;
 
     // Validate URL if provided
     if (customUrl && customUrl.trim() !== "") {
@@ -96,13 +96,13 @@ export async function PATCH(req: Request) {
       }
     }
 
-
-    const userExist = await prisma.user.findUnique(
-      {where: {id: uid} },
-    );
+    const userExist = await prisma.user.findUnique({ where: { id: uid } });
 
     if (!userExist) {
-      return NextResponse.json({},{status: 404, statusText: "User Doesn't Exist"})
+      return NextResponse.json(
+        {},
+        { status: 404, statusText: "User Doesn't Exist" },
+      );
     }
 
     // Update user
@@ -112,6 +112,7 @@ export async function PATCH(req: Request) {
         customUrl: customUrl || userExist.customUrl,
         tagLine: tagLine || userExist.tagLine,
         avatarUrl: finalAvatarUrl || userExist.avatarUrl,
+        location: location || userExist.location,
       },
     });
 
@@ -121,6 +122,7 @@ export async function PATCH(req: Request) {
         tagLine: user.tagLine,
         customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,
+        location: user.location,
       },
     });
   } catch (error: any) {

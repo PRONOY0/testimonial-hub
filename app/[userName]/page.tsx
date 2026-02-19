@@ -194,7 +194,7 @@ export default function User() {
       "min-h-screen text-white",
       (currentStep === "REVIEW" || currentStep === "SUCCESS")
         ? "flex items-center justify-center"
-        : "flex"
+        : "flex items-center justify-center lg:items-center lg:justify-start"
     )}>
 
       {/* LEFT SIDE - Form Content (or full width for review/success) */}
@@ -293,7 +293,7 @@ export default function User() {
 
       {/* RIGHT SIDE - Only show for form steps, not review/success */}
       {currentStep !== "REVIEW" && currentStep !== "SUCCESS" && (
-        <div className="w-1/2 flex items-center justify-center px-12">
+        <div className="w-1/2 lg:flex items-center justify-center px-12 hidden">
           <AnimatePresence mode="wait">
             {currentStep === "INTRO" && (
               <motion.div

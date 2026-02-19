@@ -18,10 +18,11 @@ model User {
   id        String  @id @map("_id") // firebase uid
   email     String  @unique
   userName  String  @unique
-  tagLine   String?  @default("This is my tagline that clients will see")
+  tagLine   String? @default("This is my tagline that clients will see")
   customUrl String?
   name      String
   avatarUrl String?
+  location  String? @default("India")
 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt

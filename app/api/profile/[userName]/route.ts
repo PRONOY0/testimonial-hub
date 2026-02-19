@@ -64,6 +64,7 @@ export async function GET(
         tagLine: user.tagLine,
         customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,
+        location: user.location,
         createdAt: user.createdAt,
       },
       testimonials,

@@ -118,18 +118,28 @@ export default function Dashboard() {
                     <button className="px-3 py-1 text-xs rounded-full bg-white/10 text-white cursor-none" data-hover="true">
                       All
                     </button>
-
-                    {/* //! Commenting it out only for future use */}
-                    {/* <button className="px-3 py-1 text-xs rounded-full text-zinc-500 hover:text-white transition-colors" data-hover="true">
-                      Verified Only
-                    </button> */}
                   </div>
                 </div>
-                <div className="space-y-4">
+
+                {/* Wrap testimonials in motion.div with stagger */}
+                <motion.div
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-100px" }}
+                  variants={{
+                    hidden: {},
+                    visible: {
+                      transition: {
+                        staggerChildren: 0.1, // ← Stagger delay between children
+                      }
+                    }
+                  }}
+                  className="space-y-8"
+                >
                   {testimonials.map((testimonial, i) => (
                     <TestimonialCard key={testimonial.id} data={testimonial} index={i} />
                   ))}
-                </div>
+                </motion.div>
               </div>
 
               {!loading && testimonials.length === 0 && (

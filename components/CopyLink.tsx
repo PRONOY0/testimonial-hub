@@ -37,7 +37,7 @@ export const CopyLink = ({ submissionLink, publicLink }: CopyLinkProps) => {
         <div className="relative inline-flex items-center bg-zinc-900 rounded-full p-1 border border-white/10">
           {/* Sliding background */}
           <motion.div
-            className="absolute inset-y-1 w-[calc(50%-4px)] bg-linear-to-r from-cyan-500 to-purple-500 rounded-full"
+            className="absolute inset-y-1 w-[calc(50%-4px)] bg-cyan-500 rounded-full"
             animate={{
               x: isPublic ? '100%' : '0%',
             }}
@@ -53,7 +53,7 @@ export const CopyLink = ({ submissionLink, publicLink }: CopyLinkProps) => {
             onClick={() => setIsPublic(false)}
             className={cn(
               "relative z-10 px-6 py-2 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer",
-              !isPublic ? 'text-white' : 'text-zinc-400'
+              !isPublic ? 'text-black' : 'text-zinc-400'
             )}
           >
             Collect
@@ -64,7 +64,7 @@ export const CopyLink = ({ submissionLink, publicLink }: CopyLinkProps) => {
             onClick={() => setIsPublic(true)}
             className={cn(
               "relative z-10 px-6 py-2 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer",
-              isPublic ? 'text-white' : 'text-zinc-400'
+              isPublic ? 'text-black' : 'text-zinc-400'
             )}
           >
             Show

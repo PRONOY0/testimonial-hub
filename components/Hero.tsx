@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"></span>
               </span>
-              v1.0 
+              v1.0
             </div>
 
             <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
@@ -79,7 +79,6 @@ export const Hero: React.FC = () => {
                   Get your link <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-              <Button>View Demo</Button>
             </div>
           </motion.div>
         </div>
@@ -235,11 +234,24 @@ export const Hero: React.FC = () => {
             <div className="text-zinc-500 text-sm font-mono">Live updates</div>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.15, // Slightly slower for visual impact
+                }
+              }
+            }}
+            className="grid md:grid-cols-3 gap-6"
+          >
             {DEMO_TESTIMONIALS.map((t, i) => (
               <TestimonialCard key={t.id} data={t} index={i} />
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 

@@ -2,9 +2,10 @@
 
 import React, { useState, useRef } from 'react';
 import { Star, ShieldCheck, Play, Pause, Linkedin, Instagram } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
 import { Testimonial } from '@/types/types';
 import { BsTwitterX } from 'react-icons/bs';
+import { motion } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface Props {
   data: Testimonial;
@@ -53,7 +54,23 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
   }
 
   return (
-    <Card delay={index * 0.1} className="hover:border-white/20 transition-all duration-500">
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: 0.6,
+            ease: [0.22, 1, 0.36, 1]
+          }
+        }
+      }}
+      className={cn(
+        "glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-white/20 transition-all duration-500"
+      )}
+    >
+      <div className="absolute inset-0 bg-linear-to-br from-white/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
       <div className="flex items-start justify-between mb-5">
         <div className="flex items-center gap-3">
           {/* Avatar or Fallback */}
@@ -140,6 +157,6 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
           </span>
         </div>
       </div>
-    </Card>
+    </motion.div>
   );
 };
