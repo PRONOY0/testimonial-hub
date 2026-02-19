@@ -20,8 +20,6 @@
   --color-neon-purple: #a78bfa;
 
   /* Fonts */
-  --font-sans: Inter, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
 
   /* Animations */
   --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -52,7 +50,7 @@
 body {
   background-color: var(--color-background);
   color: #e4e4e7; /* Zinc 200 */
-  font-family: var(--font-sans);
+  font-family: var(--font-manrope), sans-serif;
   overflow-x: hidden;
   cursor: none; /* Custom cursor */
 }
@@ -127,4 +125,44 @@ body {
   background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Subtle animated noise */
+.noise-bg {
+  position: absolute;
+  z-index: 100;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/noise.jpg");
+  background-size: 300px 300px; /* important for grain density */
+  background-repeat: repeat;
+  mix-blend-mode: overlay;
+}
+
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translateX(-10%) skewX(-5deg);
+  }
+  50% {
+    transform: translateX(10%) skewX(5deg);
+  }
+}
+
+@keyframes aurora-reverse {
+  0%,
+  100% {
+    transform: translateX(10%) skewX(5deg);
+  }
+  50% {
+    transform: translateX(-10%) skewX(-5deg);
+  }
+}
+
+.animate-aurora {
+  animation: aurora 20s ease-in-out infinite;
+}
+
+.animate-aurora-reverse {
+  animation: aurora-reverse 25s ease-in-out infinite;
 }

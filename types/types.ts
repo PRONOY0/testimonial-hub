@@ -12,7 +12,7 @@ export interface Testimonial {
   
   isVerifiedByOwner: boolean;
   
-  date: string;
+  createdAt: string;
 }
 
 export interface Stats {
@@ -25,4 +25,8 @@ export interface User {
   name: string;
   username: string;
   stats: Stats;
+}
+
+export interface unAuthorizedError {
+  status: number;
 }

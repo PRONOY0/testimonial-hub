@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import GoogleAuthButton from '../AuthButton';
 import { SettingsDialog } from '@/components/SettingsDialog';
+import { FiCode } from "react-icons/fi";
+
 
 export const Navbar: React.FC = () => {
   const { user, dbUser, loading } = useUser();
@@ -42,6 +44,10 @@ export const Navbar: React.FC = () => {
                   >
                     <Settings className="w-5 h-5" />
                   </button>
+
+                  <Link href="/api-docs" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors" title="API Docs">
+                    <FiCode className="w-5 h-5" />
+                  </Link>
 
                   {/* Profile Avatar */}
                   <Link href="/dashboard" className="w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden hover:border-white/20 transition-colors">

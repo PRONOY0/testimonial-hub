@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { Star, ShieldCheck, Play, Pause, Linkedin, Twitter, Instagram } from 'lucide-react';
+import { Star, ShieldCheck, Play, Pause, Linkedin, Instagram } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Testimonial } from '@/types/types';
+import { BsTwitterX } from 'react-icons/bs';
 
 interface Props {
   data: Testimonial;
@@ -18,7 +19,7 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
   const getSocialIcon = (url: string) => {
     const lowerUrl = url.toLowerCase();
     if (lowerUrl.includes('linkedin')) return <Linkedin className="w-3.5 h-3.5" />;
-    if (lowerUrl.includes('twitter') || lowerUrl.includes('x.com')) return <Twitter className="w-3.5 h-3.5" />;
+    if (lowerUrl.includes('twitter') || lowerUrl.includes('x.com')) return <BsTwitterX className="w-3.5 h-3.5" />;
     if (lowerUrl.includes('instagram')) return <Instagram className="w-3.5 h-3.5" />;
     return <Linkedin className="w-3.5 h-3.5" />; // Default fallback
   };
@@ -38,6 +39,18 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
       setIsPlaying(true);
     }
   };
+
+  function getOrdinalDate(date: Date) {
+    const day = date.getDate();
+    const month = date.toLocaleString('default', { month: 'short' });
+    const year = date.getFullYear();
+
+    const suffix = ["th", "st", "nd", "rd"];
+    const v = day % 100;
+    const dayWithSuffix = day + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+
+    return `${dayWithSuffix} ${month} ${year}`;
+  }
 
   return (
     <Card delay={index * 0.1} className="hover:border-white/20 transition-all duration-500">
@@ -81,7 +94,7 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
 
       {/* Content */}
       <p className="text-lg text-zinc-300 leading-relaxed mb-5 font-light">
-        {data.feedback }
+        {data.feedback}
       </p>
 
       {/* Footer: Stars, Audio, Date */}
@@ -122,7 +135,9 @@ export const TestimonialCard: React.FC<Props> = ({ data, index }) => {
               />
             </>
           )}
-          <span className="text-sm text-zinc-600 font-mono uppercase tracking-wide">{data.date}</span>
+          <span className="text-sm text-zinc-500 font-mono uppercase tracking-wide">
+            {getOrdinalDate(new Date(data.createdAt))}
+          </span>
         </div>
       </div>
     </Card>

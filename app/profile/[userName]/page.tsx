@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Star, ShieldCheck, Quote, Globe, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { TestimonialCard } from '@/components/TestimonialCard';
-import { Testimonial } from '@/types/types';
+import { Testimonial, unAuthorizedError } from '@/types/types';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { getuser } from '@/lib/api';
@@ -42,7 +42,11 @@ export default function PublicProfile() {
 
                 setLoading(false);
             } catch (error) {
-                console.error(error);
+                console.log(error);
+                const err = error as unAuthorizedError;
+                if (err.status === 404) {
+                    window.location.href = '/NotFound';
+                }
             }
         }
 
@@ -50,7 +54,7 @@ export default function PublicProfile() {
     }, [username])
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-neon-blue/20">
+        <div className="min-h-screen text-white selection:bg-neon-blue/20">
             <div className="pt-32 pb-24 px-6 relative">
                 {/* Ambient Glow */}
                 <div className="fixed top-0 left-1/2 -translate-x-1/2 w-150 h-150 bg-neon-blue/5 blur-[120px] rounded-full pointer-events-none -z-10" />
@@ -73,7 +77,7 @@ export default function PublicProfile() {
                         </div>
                         {/* Verified Badge on Avatar */}
                         <div className="absolute bottom-2 right-2 bg-linear-to-br from-cyan-500 to-cyan-300 p-1.5 rounded-full border-2 border-black z-20 shadow-lg">
-                            <ShieldCheck className="w-4 h-4 text-black fill-white" strokeWidth={2} />
+                            <ShieldCheck className="w-6 h-6 text-black fill-white" strokeWidth={2} />
                         </div>
                         {/* Soft glow behind avatar */}
                         <div className="absolute inset-0 bg-white/5 blur-2xl rounded-full -z-10 transform scale-110" />

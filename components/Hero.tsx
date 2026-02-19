@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Shield, Layout, Code, Mic, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Shield, Layout, Code, Mic, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { TestimonialCard } from '../components/TestimonialCard';
@@ -15,8 +15,8 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
     avatarUrl: 'https://picsum.photos/seed/sarah/100/100',
     stars: 5,
     feedback: "The level of polish in Alex's work is unmatched. Not only did they deliver ahead of schedule, but the attention to micro-interactions blew our team away.",
-    verified: true,
-    date: '2 days ago',
+    isVerifiedByOwner: true,
+    createdAt: '2023-10-27T14:22:01Z',
     socialLink: 'https://linkedin.com/in/sarahjenkins',
     audioUrl: 'https://example.com/audio1.mp3'
   },
@@ -27,8 +27,8 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
     avatarUrl: 'https://picsum.photos/seed/michael/100/100',
     stars: 5,
     feedback: "Easily the best freelance developer I've hired in the last 5 years. Communication was pristine.",
-    verified: true,
-    date: '1 week ago',
+    isVerifiedByOwner: true,
+    createdAt: '2023-10-20T14:22:01Z',
     socialLink: 'https://twitter.com/mchen'
   },
   {
@@ -38,8 +38,8 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
     avatarUrl: 'https://picsum.photos/seed/elena/100/100',
     stars: 4,
     feedback: "Incredible technical skills. Solved complex architecture problems we had been struggling with for months.",
-    verified: false,
-    date: '3 weeks ago',
+    isVerifiedByOwner: false,
+    createdAt: '2023-05-15T14:22:01Z',
     socialLink: 'https://linkedin.com/in/elenarodriguez'
   }
 ];
@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"></span>
               </span>
-              v2.0 Public Beta
+              v1.0 
             </div>
 
             <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
@@ -85,7 +85,7 @@ export const Hero: React.FC = () => {
         </div>
 
         {/* Ambient Glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-neon-blue/10 blur-[120px] rounded-full pointer-events-none -z-10 opacity-50" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-200 h-100 bg-neon-blue/10 blur-[120px] rounded-full pointer-events-none -z-10 opacity-50" />
       </section>
 
       {/* Editorial Bento Section */}
@@ -97,7 +97,7 @@ export const Hero: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="font-display text-3xl md:text-4xl font-bold"
+              className="font-display text-3xl md:text-6xl font-bold"
             >
               The complete <br />
               <span className="text-zinc-500">reputation stack.</span>
@@ -114,7 +114,7 @@ export const Hero: React.FC = () => {
                 </div>
                 <h3 className="font-display text-2xl font-bold mb-3">One link. Zero friction.</h3>
                 <p className="text-zinc-400 text-sm leading-relaxed max-w-md">
-                  Forget the back-and-forth. Send your unique handle to clients, and they can submit text, video, or audio reviews in seconds. No login required.
+                  Forget the back-and-forth. Send your unique handle to clients, and they can submit text or audio reviews in seconds. No login required.
                 </p>
               </div>
 
@@ -133,7 +133,7 @@ export const Hero: React.FC = () => {
               </div>
 
               {/* Subtle Gradient Hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+              <div className="absolute inset-0 bg-linear-to-br from-neon-blue/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             </Card>
 
             {/* 2. Audio Testimonials (Medium) */}
@@ -183,7 +183,7 @@ export const Hero: React.FC = () => {
               <div className="relative z-10 w-12 h-12 rounded-lg bg-zinc-800/50 flex items-center justify-center border border-white/5 shrink-0 group-hover:scale-110 transition-transform duration-500">
                 <Layout className="w-5 h-5 text-zinc-300" />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-l from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-l from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             </Card>
 
             {/* 5. Embedding (Small/Medium) */}
@@ -219,8 +219,8 @@ export const Hero: React.FC = () => {
             ].map((item, i) => (
               <div key={i} className="relative group">
                 <div className="text-6xl font-display font-bold text-white/5 mb-4 group-hover:text-white/10 transition-colors duration-500">{item.step}</div>
-                <h3 className="text-lg font-medium mb-2">{item.title}</h3>
-                <p className="text-sm text-zinc-500">{item.desc}</p>
+                <h3 className="text-xl font-medium mb-2">{item.title}</h3>
+                <p className="text-base text-zinc-500">{item.desc}</p>
               </div>
             ))}
           </div>

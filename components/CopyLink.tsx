@@ -32,30 +32,44 @@ export const CopyLink = ({ submissionLink, publicLink }: CopyLinkProps) => {
       transition={{ delay: 0.3, duration: 0.5 }}
       className="w-full max-w-2xl mx-auto"
     >
-      {/* Toggle Tabs */}
-      <div className="flex gap-2 mb-4 justify-center">
-        <button
-          onClick={() => setIsPublic(false)}
-          className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-all",
-            !isPublic
-              ? 'bg-white text-black'
-              : 'bg-white/5 text-zinc-500 hover:text-white'
-          )}
-        >
-          📝 Collect Feedback
-        </button>
-        <button
-          onClick={() => setIsPublic(true)}
-          className={cn(
-            "px-4 py-2 rounded-full text-sm font-medium transition-all",
-            isPublic
-              ? 'bg-white text-black'
-              : 'bg-white/5 text-zinc-500 hover:text-white'
-          )}
-        >
-          👀 Show Credibility
-        </button>
+      {/* Toggle Switch */}
+      <div className="flex justify-center mb-4">
+        <div className="relative inline-flex items-center bg-zinc-900 rounded-full p-1 border border-white/10">
+          {/* Sliding background */}
+          <motion.div
+            className="absolute inset-y-1 w-[calc(50%-4px)] bg-linear-to-r from-cyan-500 to-purple-500 rounded-full"
+            animate={{
+              x: isPublic ? '100%' : '0%',
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
+          />
+
+          {/* Collect Feedback button */}
+          <button
+            onClick={() => setIsPublic(false)}
+            className={cn(
+              "relative z-10 px-6 py-2 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer",
+              !isPublic ? 'text-white' : 'text-zinc-400'
+            )}
+          >
+            Collect
+          </button>
+
+          {/* Show Credibility button */}
+          <button
+            onClick={() => setIsPublic(true)}
+            className={cn(
+              "relative z-10 px-6 py-2 rounded-full text-sm font-medium transition-colors duration-200 cursor-pointer",
+              isPublic ? 'text-white' : 'text-zinc-400'
+            )}
+          >
+            Show
+          </button>
+        </div>
       </div>
 
       {/* Link Box */}

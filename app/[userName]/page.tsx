@@ -123,11 +123,6 @@ export default function User() {
       setIsSubmitting(true);
 
       try {
-        // Convert audio to base64
-        // Case 1: User recorded → audioBlob is a Blob
-        // Case 2: User uploaded → audioFile is a File (File extends Blob)
-        // Case 3: No audio → null
-
         const audioSource = formData.audioBlob || formData.audioFile || null;
 
         let audioBase64: string | null = null;
@@ -196,7 +191,7 @@ export default function User() {
 
   return (
     <div className={cn(
-      "min-h-screen bg-black text-white",
+      "min-h-screen text-white",
       (currentStep === "REVIEW" || currentStep === "SUCCESS")
         ? "flex items-center justify-center"
         : "flex"
