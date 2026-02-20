@@ -25,6 +25,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         if (isOpen && !fetching) {
             fetchSettings();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     const fetchSettings = async () => {

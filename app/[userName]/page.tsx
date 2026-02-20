@@ -321,7 +321,7 @@ export default function User() {
                 className="w-full max-w-2xl"
               >
                 <LottieAnimation
-                  animationPath="/login.json"
+                  animationPath="/Login.json"
                   className="w-full h-auto"
                 />
               </motion.div>

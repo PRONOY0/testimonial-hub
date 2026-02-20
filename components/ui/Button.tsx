@@ -28,7 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {/* subtle top edge highlight */}
-      <span className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/30 to-transparent opacity-40" />
+      <span className="pointer-events-none absolute inset-0 rounded-full bg-linear-to-b from-white/30 to-transparent opacity-40" />
 
       {/* inner stroke for depth */}
       <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/20" />

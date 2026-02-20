@@ -43,11 +43,11 @@ export default function GoogleAuthButton() {
         >
             {/* subtle top reflection */}
             <span className="pointer-events-none absolute inset-0 rounded-2xl 
-      bg-gradient-to-b from-white/20 to-transparent opacity-40" />
+      bg-linear-to-b from-white/20 to-transparent opacity-40" />
 
             <span className="relative z-10 flex items-center justify-center gap-2 sm:gap-3 text-base sm:text-lg font-thin tracking-wider">
                 Sign in
-                <FcGoogle className="text-xl sm:text-2xl flex-shrink-0" />
+                <FcGoogle className="text-xl sm:text-2xl shrink-0" />
             </span>
         </button>
     );
