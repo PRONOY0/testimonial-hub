@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { getuser } from '@/lib/api';
 import { Loader } from '@/components/Loader';
+import LottieAnimation from '@/components/LottieAnimation';
 
 export default function PublicProfile() {
     const params = useParams();
@@ -161,91 +162,114 @@ export default function PublicProfile() {
                             {
                                 loading ?
                                     (<>
-                                        <p>Loading...</p>
+                                        <Loader />
                                     </>)
                                     :
                                     (<>
-                                        <div className="max-w-212.5 mx-auto">
-                                            <motion.div
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                                transition={{ delay: 0.6, duration: 0.8 }}
-                                                className="flex items-center justify-center gap-4 mb-16"
-                                            >
-                                                <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
-                                                <h2 className="font-display text-lg tracking-widest text-zinc-500 uppercase">What Clients Say</h2>
-                                                <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
-                                            </motion.div>
+                                        {testimonials.length > 0 ?
+                                            (
+                                                <>
+                                                    <div className="max-w-212.5 mx-auto">
+                                                        <motion.div
+                                                            initial={{ opacity: 0 }}
+                                                            animate={{ opacity: 1 }}
+                                                            transition={{ delay: 0.6, duration: 0.8 }}
+                                                            className="flex items-center justify-center gap-4 mb-16"
+                                                        >
+                                                            <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
+                                                            <h2 className="font-display text-lg tracking-widest text-zinc-500 uppercase">What Clients Say</h2>
+                                                            <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
+                                                        </motion.div>
 
-                                            {
-                                                testimonials.length > 6 ?
-                                                    (
-                                                        <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-                                                            {testimonials.map((testimonial, i) => (
-                                                                <motion.div
-                                                                    key={testimonial.id}
-                                                                    initial={{ opacity: 0, y: 40 }}
-                                                                    whileInView={{ opacity: 1, y: 0 }}
-                                                                    viewport={{ once: true, margin: "-50px" }}
-                                                                    transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                                                                    className="break-inside-avoid mb-6"
-                                                                >
-                                                                    <div className="group relative">
-                                                                        {/* Quote decoration - only show on desktop */}
-                                                                        <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 lg:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none hidden lg:block">
-                                                                            <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
-                                                                        </div>
+                                                        {
+                                                            testimonials.length > 6 ?
+                                                                (
+                                                                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
+                                                                        {testimonials.map((testimonial, i) => (
+                                                                            <motion.div
+                                                                                key={testimonial.id}
+                                                                                initial={{ opacity: 0, y: 40 }}
+                                                                                whileInView={{ opacity: 1, y: 0 }}
+                                                                                viewport={{ once: true, margin: "-50px" }}
+                                                                                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                                                                className="break-inside-avoid mb-6"
+                                                                            >
+                                                                                <div className="group relative">
+                                                                                    {/* Quote decoration - only show on desktop */}
+                                                                                    <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 lg:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none hidden lg:block">
+                                                                                        <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
+                                                                                    </div>
 
-                                                                        <TestimonialCard
-                                                                            data={testimonial}
-                                                                            index={i}
-                                                                        />
+                                                                                    <TestimonialCard
+                                                                                        data={testimonial}
+                                                                                        index={i}
+                                                                                    />
+                                                                                </div>
+                                                                            </motion.div>
+                                                                        ))}
                                                                     </div>
-                                                                </motion.div>
-                                                            ))}
-                                                        </div>
-                                                    )
-                                                    :
-                                                    (
-                                                        <div className="space-y-8 md:space-y-12">
-                                                            {testimonials.map((testimonial, i) => (
-                                                                <motion.div
-                                                                    key={testimonial.id}
-                                                                    initial={{ opacity: 0, y: 40 }}
-                                                                    whileInView={{ opacity: 1, y: 0 }}
-                                                                    viewport={{ once: true, margin: "-50px" }}
-                                                                    transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                                                                >
-                                                                    <div className="group relative">
-                                                                        <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 md:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none">
-                                                                            <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
-                                                                        </div>
+                                                                )
+                                                                :
+                                                                (
+                                                                    <div className="space-y-8 md:space-y-12">
+                                                                        {testimonials.map((testimonial, i) => (
+                                                                            <motion.div
+                                                                                key={testimonial.id}
+                                                                                initial={{ opacity: 0, y: 40 }}
+                                                                                whileInView={{ opacity: 1, y: 0 }}
+                                                                                viewport={{ once: true, margin: "-50px" }}
+                                                                                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                                                            >
+                                                                                <div className="group relative">
+                                                                                    <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 md:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none">
+                                                                                        <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
+                                                                                    </div>
 
-                                                                        <TestimonialCard
-                                                                            data={testimonial}
-                                                                            index={i}
-                                                                        />
+                                                                                    <TestimonialCard
+                                                                                        data={testimonial}
+                                                                                        index={i}
+                                                                                    />
+                                                                                </div>
+                                                                            </motion.div>
+                                                                        ))}
                                                                     </div>
-                                                                </motion.div>
-                                                            ))}
-                                                        </div>
-                                                    )
-                                            }
-                                        </div>
+                                                                )
+                                                        }
+                                                    </div>
 
-                                        {/* FOOTER CTA */}
-                                        <div className="max-w-xl mx-auto text-center mt-32 pt-20 border-t border-white/5">
-                                            <div className="inline-flex items-center gap-2 mb-6 opacity-50">
-                                                <div className="w-5 h-5 rounded bg-zinc-800" />
-                                                <span className="font-display font-bold text-sm">TestimonialHub</span>
-                                            </div>
-                                            <p className="text-zinc-500 text-sm mb-8">
-                                                Ready to build your own reputation infrastructure?
-                                            </p>
-                                            <Button className="rounded-full px-8 bg-zinc-900 border-zinc-800 hover:border-zinc-700">
-                                                Create your page
-                                            </Button>
-                                        </div>
+                                                    <div className="max-w-xl mx-auto text-center mt-32 pt-20 border-t border-white/5">
+                                                        <div className="inline-flex items-center gap-2 mb-6 opacity-50">
+                                                            <div className="w-5 h-5 rounded bg-zinc-800" />
+                                                            <span className="font-display font-bold text-sm">TestimonialHub</span>
+                                                        </div>
+                                                        <p className="text-zinc-500 text-sm mb-8">
+                                                            Ready to build your own reputation infrastructure?
+                                                        </p>
+                                                        <Button className="rounded-full px-8 bg-zinc-900 border-zinc-800 hover:border-zinc-700">
+                                                            Create your page
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            )
+                                            :
+                                            (
+                                                <div className="flex flex-col items-center justify-center py-16">
+                                                    <LottieAnimation
+                                                        animationPath="/emptyGhost.json"
+                                                        className="w-96 h-96 mb-6"
+                                                    />
+
+                                                    <h2 className="text-5xl font-bold text-gray-200 mb-2">
+                                                        Your First Testimonial Awaits
+                                                    </h2>
+
+                                                    <p className="text-zinc-500 text-center max-w-md mb-8">
+                                                        Share your unique link with clients and start building credibility.
+                                                        Every expert started with zero testimonials.
+                                                    </p>
+                                                </div>
+                                            )
+                                        }
                                     </>)
                             }
 
