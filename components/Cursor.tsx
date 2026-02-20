@@ -8,7 +8,7 @@ const Cursor: React.FC = () => {
   const mouseY = useMotionValue(0);
 
   // Smooth spring physics for "weighted" feel
-  const springConfig = { damping: 25, stiffness: 120, mass: 0.8 };
+  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
 
