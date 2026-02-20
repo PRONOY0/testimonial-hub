@@ -41,7 +41,7 @@ const Cursor: React.FC = () => {
     <div className='hidden xl:block'>
       {/* Main Cursor Dot */}
       <motion.div
-        className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-[9999] mix-blend-difference"
+        className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-9999 mix-blend-difference"
         style={{ x: cursorX, y: cursorY }}
         animate={{
           scale: isHovering ? 2.5 : 1,
@@ -52,7 +52,7 @@ const Cursor: React.FC = () => {
       
       {/* Subtle Glow Follower - Delayed */}
       <motion.div
-        className="fixed top-0 left-0 w-32 h-32 bg-neon-blue/20 rounded-full blur-3xl pointer-events-none z-[9998]"
+        className="fixed top-0 left-0 w-32 h-32 bg-neon-blue/20 rounded-full blur-3xl pointer-events-none z-9999"
         style={{ 
           x: cursorX, 
           y: cursorY,
