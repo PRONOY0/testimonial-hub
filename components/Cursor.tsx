@@ -69,3 +69,5 @@ const Cursor: React.FC = () => {
 };
 
 export default Cursor;
+
+// New comment
