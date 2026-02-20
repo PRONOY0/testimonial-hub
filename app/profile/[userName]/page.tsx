@@ -62,7 +62,9 @@ export default function PublicProfile() {
             {
                 loading ?
                     (
-                        <Loader />
+                        <div className="fixed inset-0 flex items-center justify-center">
+                            <Loader size={40} />
+                        </div>
                     )
                     :
                     (
@@ -161,9 +163,11 @@ export default function PublicProfile() {
 
                             {
                                 loading ?
-                                    (<>
-                                        <Loader />
-                                    </>)
+                                    (
+                                        <div className="fixed inset-0 flex items-center justify-center">
+                                            <Loader size={40} />
+                                        </div>
+                                    )
                                     :
                                     (<>
                                         {testimonials.length > 0 ?
@@ -259,7 +263,7 @@ export default function PublicProfile() {
                                                         className="w-96 h-96 mb-6"
                                                     />
 
-                                                    <h2 className="text-5xl font-bold text-gray-200 mb-2">
+                                                    <h2 className="text-5xl font-bold text-gray-200 mb-2 text-center">
                                                         Your First Testimonial Awaits
                                                     </h2>
 

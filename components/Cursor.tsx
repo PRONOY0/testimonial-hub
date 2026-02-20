@@ -38,7 +38,7 @@ const Cursor: React.FC = () => {
   }, [mouseX, mouseY]);
 
   return (
-    <div className='hidden lg:block'>
+    <div className='BreakPointForCursor'>
       {/* Main Cursor Dot */}
       <motion.div
         className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-9999 mix-blend-difference"

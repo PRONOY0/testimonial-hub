@@ -166,3 +166,13 @@ body {
 .animate-aurora-reverse {
   animation: aurora-reverse 25s ease-in-out infinite;
 }
+
+.BreakPointForCursor {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .BreakPointForCursor {
+    display: block;
+  }
+}
