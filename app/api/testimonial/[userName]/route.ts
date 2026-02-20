@@ -4,7 +4,7 @@ import cloudinary from "@/lib/cloudinary";
 
 export async function POST(
   req: Request,
-  { params }: { params: { userName: string } },
+  { params }: { params: Promise<{ userName: string }> },
 ) {
   try {
     const { userName } = await params;
