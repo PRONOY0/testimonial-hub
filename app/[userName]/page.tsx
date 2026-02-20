@@ -202,7 +202,7 @@ export default function User() {
         "flex flex-col justify-center items-center px-12 py-20",
         (currentStep === "REVIEW" || currentStep === "SUCCESS")
           ? "w-full"
-          : "w-1/2"
+          : "lg:w-1/2"
       )}>
         <div className={cn(
           "w-full",

@@ -235,16 +235,12 @@ export const Hero: React.FC = () => {
           </div>
 
           <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.15, // Slightly slower for visual impact
-                }
-              }
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{
+              duration: 1,
+              ease: "easeOut",
             }}
             className="grid md:grid-cols-3 gap-6"
           >
@@ -254,19 +250,6 @@ export const Hero: React.FC = () => {
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="px-6 pt-20 pb-10 border-t border-white/5">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2 opacity-50">
-            <div className="w-6 h-6 rounded bg-zinc-800" />
-            <span className="font-display font-bold">TestimonialHub</span>
-          </div>
-          <div className="text-zinc-600 text-sm">
-            &copy; 2024 TestimonialHub Inc. Crafted in San Francisco.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

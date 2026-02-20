@@ -1,6 +1,7 @@
 "use client";
 
 import Cursor from "@/components/Cursor";
+import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
 import { AnimatePresence } from "framer-motion";
@@ -21,7 +22,7 @@ export default function ClientLayout({
 
                 {/* Noise texture */}
                 <div className="noise-bg" />
-                
+
                 {/* Animated aurora strips */}
                 <div className="absolute inset-0 opacity-20">
                     <div className="absolute top-1/4 left-0 right-0 h-[300px] bg-gradient-to-r from-cyan-500/30 via-purple-500/30 to-pink-500/30 blur-3xl animate-aurora" />
@@ -38,6 +39,7 @@ export default function ClientLayout({
                 <AnimatePresence mode="wait">
                     {children}
                 </AnimatePresence>
+                <Footer />
             </SmoothScroll>
         </div>
     );

@@ -19,11 +19,11 @@ export const AuthCard = () => {
                 {/* Card */}
                 <div className="relative bg-zinc-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
                     {/* Icon */}
-                    <div className="flex justify-center mb-6">
+                    {/* <div className="flex justify-center mb-6">
                         <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-cyan-500 to-purple-500 flex items-center justify-center shadow-lg">
                             <Sparkles className="w-8 h-8 text-white" />
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Heading */}
                     <h2 className="text-2xl font-display font-bold text-center mb-2">

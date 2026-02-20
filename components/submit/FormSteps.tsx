@@ -36,7 +36,7 @@ export const IntroStep: React.FC<{ username?: string, onNext: () => void }> = ({
       <span className="text-transparent bg-clip-text bg-linear-to-r from-neon-blue to-neon-purple capitalize">How was working with {""} {username || 'Alex'}</span> ?
     </h1>
 
-    <p className="text-xl text-zinc-400 mb-12 leading-relaxed max-w-md mx-auto">
+    <p className="text-lg sm:text-xl text-zinc-400 mb-12 leading-relaxed max-w-md mx-auto">
       I’d love to hear what it was like for<br />you whatever you felt, truly.
     </p>
 

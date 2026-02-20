@@ -56,6 +56,15 @@ export default function Dashboard() {
     return <AuthCard />
   }
 
+  const getMotivationalText = (count: number) => {
+    if (count === 0) return "Your first testimonial is just one share away.";
+    if (count === 1) return "Great start! Keep the momentum going.";
+    if (count >= 2 && count <= 4) return "You're building credibility. Keep going!";
+    if (count >= 5 && count <= 9) return "Strong reputation growing. Nice work!";
+    if (count >= 10 && count <= 19) return "Impressive portfolio of trust.";
+    return "You're in the top 1%. Legendary.";
+  };
+
   return (
     <div className="pt-32 pb-20 min-h-screen">
       {
@@ -78,10 +87,13 @@ export default function Dashboard() {
                   <img src={avatarUrl || `https://api.dicebear.com/9.x/lorelei/svg?seed=${userName}`} loading='lazy' alt="Profile" className='rounded-xl' />
                 </div>
 
-                <h1 className="font-display text-4xl font-bold mb-2">Welcome back, {name}</h1>
+                <h1 className="font-display text-4xl font-bold mb-2">
+                  Welcome back, {name}
+                </h1>
 
+                {/* Replace the static text with this: */}
                 <p className="text-zinc-500">
-                  Your reputation is trending upward this week.
+                  {getMotivationalText(totalTestimonials)}
                 </p>
 
               </motion.div>
