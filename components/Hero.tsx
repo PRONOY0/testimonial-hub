@@ -18,7 +18,7 @@ const DEMO_TESTIMONIALS: Testimonial[] = [
     isVerifiedByOwner: true,
     createdAt: '2023-10-27T14:22:01Z',
     socialLink: 'https://linkedin.com/in/sarahjenkins',
-    audioUrl: 'https://example.com/audio1.mp3'
+    audioUrl: 'https://image2url.com/r2/default/audio/1771596867128-87eae9ad-7794-4e51-b03c-429179e8d89b.aac'
   },
   {
     id: '2',
