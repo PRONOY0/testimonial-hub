@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
+import { Analytics } from "@vercel/analytics/next"
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -29,6 +30,7 @@ export default function RootLayout({
           antialiased
         `}
       >
+        <Analytics />
         <ClientLayout>
           {children}
         </ClientLayout>
