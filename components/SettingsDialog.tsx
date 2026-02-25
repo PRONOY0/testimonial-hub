@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera } from 'lucide-react';
 import axios from 'axios';
 import { Loader } from './Loader';
+import { IoIosWarning } from "react-icons/io";
 
 interface SettingsDialogProps {
     isOpen: boolean;
@@ -20,12 +21,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     const [saved, setSaved] = useState(false);
     const [fetching, setFetching] = useState(false);
     const [location, setLocation] = useState('');
+    const [name, setName] = useState('');
+    const [username, setUsername] = useState('');
+    const [originalUsername, setOriginalUsername] = useState('');
+    const [usernameChanged, setUsernameChanged] = useState(false);
 
     useEffect(() => {
         if (isOpen && !fetching) {
             fetchSettings();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     const fetchSettings = async () => {
@@ -36,6 +41,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
             setCustomUrl(res.data.user.customUrl || '');
             setAvatarPreview(res.data.user.avatarUrl || '');
             setLocation(res.data.user.location || '');
+            setName(res.data.user.name || '');
+            setUsername(res.data.user.userName || '');
+            setOriginalUsername(res.data.user.userName || '');
+
+            console.log("Printing user")
+            console.log(res);
         } catch (error) {
             console.error('Failed to fetch settings:', error);
         } finally {
@@ -73,6 +84,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
             }
 
             const res = await axios.patch('/api/user', {
+                name: name,
+                userName: username,
                 tagLine: tagline,
                 customUrl: customUrl,
                 avatarUrl: avatarBase64,
@@ -100,6 +113,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
         setLoading(false);
         setAvatarFile(null);
         setLocation('');
+        setName('');
+        setTagline('');
+        setCustomUrl('');
+        setOriginalUsername('');
+        setUsername('');
+        setUsernameChanged(false);
         onClose();
     };
 
@@ -178,6 +197,48 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                         </p>
                                     </div>
 
+                                    {/* Name */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                            Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            placeholder="John Doe"
+                                            maxLength={100}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-colors"
+                                        />
+                                    </div>
+
+                                    {/* userName */}
+                                    <div>
+                                        <label htmlFor='UserName' className="block text-sm font-medium text-zinc-400 mb-2">
+                                            Username
+                                        </label>
+                                        <input
+                                            id='UserName'
+                                            type="text"
+                                            value={username}
+                                            onChange={(e) => {
+                                                const newUsername = e.target.value;
+                                                setUsername(newUsername);
+                                                setUsernameChanged(newUsername !== originalUsername);
+                                            }}
+                                            placeholder="your username"
+                                            maxLength={50}
+                                            className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-xl text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/20 transition-colors"
+                                        />
+                                        {usernameChanged && (
+                                            <div className="mt-2 p-3 rounded-xl bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-sm">
+                                                <IoIosWarning className="inline mr-1 mb-0.5" />
+                                                Changing your username will update your public profile URL.
+                                            </div>
+                                        )}
+                                    </div>
+
+
                                     {/* Tagline */}
                                     <div>
                                         <label className="block text-sm font-medium text-zinc-400 mb-2">
@@ -198,7 +259,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
 
                                     {/* Custom URL */}
                                     <div>
-                                        <label className="block text-sm font-medium text-zinc-400 mb-2">
+                                        <label className="block text-sm font-medium text-zinc-400">
                                             Portfolio / Website
                                         </label>
                                         <input
@@ -240,14 +301,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                             }`}
                                     >
                                         {
-                                            loading ? 
-                                            (
-                                                <Loader/>
-                                            ) 
-                                            : 
-                                            (
-                                                saved ? 'Saved!' : 'Save Changes'
-                                            )
+                                            loading ?
+                                                (
+                                                    <Loader />
+                                                )
+                                                :
+                                                (
+                                                    saved ? 'Saved!' : 'Save Changes'
+                                                )
                                         }
                                     </motion.button>
                                 </div>

@@ -25,6 +25,9 @@ export async function GET(req: Request) {
       where: { id: uid },
       select: {
         id: true,
+        tagLine: true,
+        customUrl: true,
+        location: true,
         name: true,
         avatarUrl: true,
         userName: true,
@@ -60,7 +63,7 @@ export async function PATCH(req: Request) {
     const { uid } = decoded;
 
     const body = await req.json();
-    const { tagLine, customUrl, avatarUrl, location } = body;
+    const { tagLine, customUrl, avatarUrl, location, name, userName } = body;
 
     // Validate URL if provided
     if (customUrl && customUrl.trim() !== "") {
@@ -96,6 +99,17 @@ export async function PATCH(req: Request) {
       }
     }
 
+    const checkUserNameExist = await prisma.user.findUnique({
+      where: { userName: userName },
+    });
+
+    if (checkUserNameExist && checkUserNameExist.id !== uid) {
+      return NextResponse.json(
+        { error: "Username already taken" },
+        { status: 400 },
+      );
+    }
+
     const userExist = await prisma.user.findUnique({ where: { id: uid } });
 
     if (!userExist) {
@@ -109,9 +123,11 @@ export async function PATCH(req: Request) {
     const user = await prisma.user.update({
       where: { id: uid },
       data: {
+        name: name || userExist.name,
         customUrl: customUrl || userExist.customUrl,
         tagLine: tagLine || userExist.tagLine,
         avatarUrl: finalAvatarUrl || userExist.avatarUrl,
+        userName: userName || userExist.userName,
         location: location || userExist.location,
       },
     });
@@ -119,6 +135,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json({
       message: "Settings updated successfully",
       user: {
+        name: user.name,
         tagLine: user.tagLine,
         customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,

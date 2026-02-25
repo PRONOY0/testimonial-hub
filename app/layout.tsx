@@ -15,6 +15,14 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: "Testimonial Hub",
   description: "A platform to share and discover testimonials.",
+  openGraph: {
+    title: "Testimonial Hub",
+    description: "A platform to share and discover testimonials.",
+    images: [],
+  },
+  twitter: {
+    card: "summary"
+  },
 };
 
 export default function RootLayout({

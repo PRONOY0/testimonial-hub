@@ -59,7 +59,9 @@ export async function POST(req: Request) {
       where: { id: uid },
       update: {
         email,
-        name,
+        ...((!existingUser?.name || existingUser.name === name) && {
+          name,
+        }),
         ...((!existingUser?.avatarUrl ||
           existingUser.avatarUrl === picture) && {
           avatarUrl: picture,
@@ -73,6 +75,8 @@ export async function POST(req: Request) {
         userName,
       },
     });
+
+    //? ...((condtion) && { field: value }) is a way to conditionally include fields in an object. If the condition is true, the field will be included with the specified value; if false, it will be omitted entirely from the object.
 
     const response = NextResponse.json({ user });
 
