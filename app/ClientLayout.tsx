@@ -1,6 +1,5 @@
 "use client";
 
-import Cursor from "@/components/Cursor";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -33,8 +32,7 @@ export default function ClientLayout({
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6))]" />
             </div>
 
-            <SmoothScroll>
-                <Cursor />
+            <SmoothScroll
                 <Navbar />
                 <AnimatePresence mode="wait">
                     {children}
