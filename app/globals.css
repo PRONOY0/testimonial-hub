@@ -52,7 +52,6 @@ body {
   color: #e4e4e7; /* Zinc 200 */
   font-family: var(--font-manrope), sans-serif;
   overflow-x: hidden;
-  cursor: none; /* Custom cursor */
 }
 
 /* ============================= */
