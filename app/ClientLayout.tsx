@@ -32,7 +32,7 @@ export default function ClientLayout({
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6))]" />
             </div>
 
-            <SmoothScroll
+            <SmoothScroll>
                 <Navbar />
                 <AnimatePresence mode="wait">
                     {children}
