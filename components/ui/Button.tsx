@@ -22,7 +22,7 @@ export const Button: React.FC<ButtonProps> = ({
         "bg-transparent",
         "backdrop-blur-3xl",
         "border border-white/25",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.25)] cursor-none",
+        "shadow-[0_8px_32px_rgba(0,0,0,0.25)]",
         className
       )}
       {...props}
