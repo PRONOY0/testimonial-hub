@@ -5,12 +5,10 @@ import { Sparkles, Settings, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useUser } from '@/hooks/useUser';
 import GoogleAuthButton from '../AuthButton';
-import { SettingsDialog } from '@/components/SettingsDialog';
 import { FiCode } from "react-icons/fi";
 
 export const Navbar: React.FC = () => {
   const { user, dbUser, loading } = useUser();
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -27,7 +25,7 @@ export const Navbar: React.FC = () => {
           <div className="glass-panel rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
             {/* Logo - Left */}
             <Link href="/" className="flex items-center gap-2 group min-w-0 shrink-0" data-hover="true">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-linear-to-br from-neon-blue to-neon-purple flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-linear-to-br from-neon-blue to-neon-purple flex items-center justify-center shrink-0">
                 <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
               </div>
               <span className="font-display font-bold text-base sm:text-lg tracking-tight group-hover:text-white transition-colors text-zinc-300 truncate">
@@ -43,25 +41,25 @@ export const Navbar: React.FC = () => {
                   {/* API Docs */}
                   <Link
                     href="/api-docs"
-                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors flex-shrink-0"
+                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors shrink-0"
                     title="API Docs"
                   >
                     <FiCode className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Link>
 
                   {/* Settings Button */}
-                  <button
-                    onClick={() => setSettingsOpen(true)}
-                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors flex-shrink-0"
+                  <Link
+                    href="/Settings"
+                    className="p-1.5 sm:p-2 rounded-lg hover:bg-white/5 text-zinc-400 hover:text-white transition-colors shrink-0"
                     title="Settings"
                   >
                     <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+                  </Link>
 
                   {/* Profile Avatar */}
                   <Link
                     href="/dashboard"
-                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden hover:border-white/20 transition-colors flex-shrink-0"
+                    className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-zinc-800 border border-zinc-700 overflow-hidden hover:border-white/20 transition-colors shrink-0"
                     title="Dashboard"
                   >
                     <img
@@ -126,16 +124,14 @@ export const Navbar: React.FC = () => {
                       <FiCode className="w-4 h-4 shrink-0" />
                       API Docs
                     </Link>
-                    <button
-                      onClick={() => {
-                        setSettingsOpen(true);
-                        setMobileMenuOpen(false);
-                      }}
+                    <Link
+                      href="/Settings"
+                      onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-white/10 transition-colors text-sm text-left"
                     >
                       <Settings className="w-4 h-4 shrink-0" />
                       Settings
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -143,9 +139,6 @@ export const Navbar: React.FC = () => {
           )}
         </AnimatePresence>
       </motion.nav>
-
-      {/* Settings Dialog */}
-      <SettingsDialog isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   );
 };

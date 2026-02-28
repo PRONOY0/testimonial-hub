@@ -55,6 +55,10 @@ export async function GET(
       (t) => t.isVerifiedByOwner,
     ).length;
 
+    const customLinks = await prisma.customLink.findMany({
+      where: { userId: user.id },
+    });
+
     //! Return to frontend
     return NextResponse.json({
       user: {
@@ -62,7 +66,6 @@ export async function GET(
         name: user.name,
         userName: user.userName,
         tagLine: user.tagLine,
-        customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,
         location: user.location,
         createdAt: user.createdAt,
@@ -71,6 +74,13 @@ export async function GET(
       totalTestimonials: testimonials.length,
       avgRating: parseFloat(avgRating.toFixed(1)),
       verifiedCount: verifiedCount,
+      customLinks: customLinks,
+      socials: {
+        instagram: user.instagram,
+        twitter: user.twitter,
+        linkedin: user.linkedin,
+        youtube: user.youtube,
+      },
     });
   } catch (error) {
     console.error("Error fetching profile:", error);

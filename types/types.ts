@@ -5,13 +5,13 @@ export interface Testimonial {
   avatarUrl?: string;
 
   feedback: string;
-  audioUrl?: string;
+  audioUrl?: string | null;
   stars: number;
-  
+
   socialLink: string;
-  
+
   isVerifiedByOwner: boolean;
-  
+
   createdAt: string;
 }
 
@@ -29,4 +29,11 @@ export interface User {
 
 export interface unAuthorizedError {
   status: number;
+}
+
+export interface CustomLink {
+  id: string;
+  label: string;
+  url: string;
+  order: number;
 }

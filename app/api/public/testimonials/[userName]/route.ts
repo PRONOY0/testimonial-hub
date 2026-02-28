@@ -25,6 +25,11 @@ export async function GET(
       },
     });
 
+    const customLinks = await prisma.customLink.findMany({
+      where: { userId: user?.id },
+      orderBy: { order: "asc" },
+    });
+
     if (!user) {
       return NextResponse.json(
         { error: "User not found" },
@@ -52,13 +57,20 @@ export async function GET(
           avatarUrl: user.avatarUrl,
           tagLine: user.tagLine,
           location: user.location,
-          customUrl: user.customUrl,
+          instagram: user.instagram,
+          twitter: user.twitter,
+          youtube: user.youtube,
+          linkedin: user.linkedin,
         },
         stats: {
           totalTestimonials,
           averageRating: Math.round(avgRating * 10) / 10,
           verifiedCount,
         },
+        customLinks: customLinks.map((link) => ({
+          label: link.label,
+          url: link.url,
+        })),
         testimonials: user.testimonials.map((t) => ({
           id: t.id,
           name: t.name,

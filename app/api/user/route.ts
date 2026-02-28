@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 import { firebaseAdmin } from "@/lib/firebase-admin";
 import cloudinary from "@/lib/cloudinary";
 
-// GET /api/user/[userName]
+// GET /api/user - Fetch user details
+// PATCH /api/user - Update user details
 export async function GET(req: Request) {
   try {
     const cookie = (await cookies()).get("session")?.value;
@@ -23,14 +24,10 @@ export async function GET(req: Request) {
     // Fetch user from DB
     const user = await prisma.user.findUnique({
       where: { id: uid },
-      select: {
-        id: true,
-        tagLine: true,
-        customUrl: true,
-        location: true,
-        name: true,
-        avatarUrl: true,
-        userName: true,
+      include: {
+        customLinks: {
+          orderBy: { order: "asc" },
+        },
       },
     });
 
@@ -38,7 +35,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({
+      user: {
+        ...user,
+      },
+    });
   } catch (error) {
     console.error("Error fetching user by username:", error);
     return NextResponse.json(
@@ -63,19 +64,8 @@ export async function PATCH(req: Request) {
     const { uid } = decoded;
 
     const body = await req.json();
-    const { tagLine, customUrl, avatarUrl, location, name, userName } = body;
-
-    // Validate URL if provided
-    if (customUrl && customUrl.trim() !== "") {
-      try {
-        new URL(customUrl);
-      } catch {
-        return NextResponse.json(
-          { error: "Invalid URL format" },
-          { status: 400 },
-        );
-      }
-    }
+    const { tagLine, avatarUrl, location, name, userName, links, socials } =
+      body;
 
     // Upload avatar to Cloudinary if new image provided
     let finalAvatarUrl: string | undefined;
@@ -124,12 +114,35 @@ export async function PATCH(req: Request) {
       where: { id: uid },
       data: {
         name: name || userExist.name,
-        customUrl: customUrl || userExist.customUrl,
         tagLine: tagLine || userExist.tagLine,
         avatarUrl: finalAvatarUrl || userExist.avatarUrl,
         userName: userName || userExist.userName,
         location: location || userExist.location,
+        instagram: socials.instagram || userExist.instagram,
+        linkedin: socials.linkedin || userExist.linkedin,
+        twitter: socials.twitter || userExist.twitter,
+        youtube: socials.youtube || userExist.youtube,
       },
+    });
+
+    if (links && Array.isArray(links) && links.length > 0) {
+      await prisma.customLink.deleteMany({
+        where: { userId: uid },
+      });
+
+      await prisma.customLink.createMany({
+        data: links.map((link: any, index: number) => ({
+          label: link.label,
+          url: link.url,
+          order: index,
+          userId: uid,
+        })),
+      });
+    }
+
+    const updatedLinks = await prisma.customLink.findMany({
+      where: { userId: uid },
+      orderBy: { order: "asc" },
     });
 
     return NextResponse.json({
@@ -137,17 +150,18 @@ export async function PATCH(req: Request) {
       user: {
         name: user.name,
         tagLine: user.tagLine,
-        customUrl: user.customUrl,
         avatarUrl: user.avatarUrl,
         location: user.location,
       },
+      customLinks: updatedLinks,
     });
   } catch (error: any) {
     if (error.code === "P2025") {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.error("Error updating user settings:", error);
+    console.log(error);
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 },

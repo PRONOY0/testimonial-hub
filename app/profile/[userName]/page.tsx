@@ -1,21 +1,28 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Star, ShieldCheck, Quote, Globe, MapPin } from 'lucide-react';
+import {
+    Star,
+    ShieldCheck,
+    Quote,
+    Globe,
+    MapPin,
+    ArrowUpRight
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { TestimonialCard } from '@/components/TestimonialCard';
-import { Testimonial, unAuthorizedError } from '@/types/types';
-import { useParams } from 'next/navigation';
+import { CustomLink, Testimonial, unAuthorizedError } from '@/types/types';
 import axios from 'axios';
+import { BsTwitterX, BsInstagram, BsLinkedin, BsYoutube } from "react-icons/bs"
 import { getuser } from '@/lib/api';
 import { Loader } from '@/components/Loader';
-import LottieAnimation from '@/components/LottieAnimation';
 
 export default function PublicProfile() {
     const params = useParams();
     const username = typeof params?.userName === "string" ? params.userName : "Alex";
-
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [name, setName] = useState(null);
     const [totalTestimonials, setTotalTestimonials] = useState(0);
@@ -24,8 +31,34 @@ export default function PublicProfile() {
     const [avatarUrl, setAvatarUrl] = useState('');
     const [loading, setLoading] = useState(true);
     const [tagline, setTagline] = useState('');
-    const [customUrl, setCustomUrl] = useState('');
     const [location, setLocation] = useState('');
+    const [socials, setSocials] = useState({
+        instagram: '',
+        twitter: '',
+        linkedin: '',
+        youtube: '',
+    })
+    const [customLinks, setCustomLinks] = useState<CustomLink[]>([]);
+
+    const getSocialIcon = (type: string) => {
+        switch (type) {
+            case 'instagram': return <BsInstagram className="w-5 h-5" />;
+            case 'twitter': return <BsTwitterX className="w-5 h-5" />;
+            case 'linkedin': return <BsLinkedin className="w-5 h-5" />;
+            case 'youtube': return <BsYoutube className="w-5 h-5" />;
+            default: return <Globe className="w-5 h-5" />;
+        }
+    };
+
+    const getSocialUrl = (type: string, handle: string) => {
+        switch (type) {
+            case 'instagram': return `https://instagram.com/${handle}`;
+            case 'twitter': return `https://twitter.com/${handle}`;
+            case 'linkedin': return `https://linkedin.com/in/${handle}`;
+            case 'youtube': return `https://youtube.com/@${handle}`;
+            default: return '#';
+        }
+    };
 
     useEffect(() => {
         async function fetchUser() {
@@ -39,10 +72,18 @@ export default function PublicProfile() {
                 setAvatarUrl(res.data.user.avatarUrl);
                 setVerifiedCount(res.data.verifiedCount);
                 setTagline(res.data.user.tagLine);
-                setCustomUrl(res.data.user.customUrl);
                 setLocation(res.data.user.location);
 
                 setTestimonials(res.data.testimonials || []);
+
+                setSocials({
+                    instagram: res.data.socials.instagram || '',
+                    twitter: res.data.socials.twitter || '',
+                    linkedin: res.data.socials.linkedin || '',
+                    youtube: res.data.socials.youtube || '',
+                })
+
+                setCustomLinks(res.data.customLinks);
 
                 setLoading(false);
             } catch (error) {
@@ -84,12 +125,12 @@ export default function PublicProfile() {
                                     <div className="w-32 h-32 md:w-40 md:h-40 rounded-full p-1 bg-linear-to-br from-zinc-800 to-zinc-900 border border-white/10 relative z-10">
                                         <img
                                             src={avatarUrl || `https://api.dicebear.com/9.x/lorelei/svg?seed=${username}`}
-                                            alt={name || "user profile pic"}
+                                            alt={name || "profile picture of user"}
                                             className="w-full h-full rounded-full object-cover grayscale-[0.2]"
                                         />
                                     </div>
                                     {/* Verified Badge on Avatar */}
-                                    <div className="absolute bottom-2 right-2 bg-linear-to-br from-cyan-500 to-cyan-300 p-1.5 rounded-full border-2 border-black z-20 shadow-lg">
+                                    <div className="absolute bottom-2 right-2 bg-cyan-500 text-neon-blue p-1.5 rounded-full border-2 border-zinc-800 z-20 shadow-xl">
                                         <ShieldCheck className="w-6 h-6 text-black fill-white" strokeWidth={2} />
                                     </div>
                                     {/* Soft glow behind avatar */}
@@ -114,24 +155,57 @@ export default function PublicProfile() {
                                     {tagline}
                                 </motion.p>
 
+                                {/* Location & Socials */}
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.3, duration: 0.6 }}
-                                    className="flex flex-wrap justify-center gap-4 text-sm text-zinc-500 mb-10"
+                                    className="flex flex-col items-center gap-6 mb-10"
                                 >
-                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/5">
-                                        <MapPin className="w-3.5 h-3.5" /> {location || "Earth"}
+                                    {/* Location */}
+                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/5 text-sm text-zinc-500">
+                                        <MapPin className="w-3.5 h-3.5" /> {location}
                                     </div>
 
-                                    {/* //! Custom Link Mostly for Portfolio Or Behance */}
-                                    {
-                                        customUrl && (
-                                            <a href={`${customUrl}`} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/5 hover:text-white transition-colors">
-                                                <Globe className="w-3.5 h-3.5" /> {customUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                                    {/* Social Links & Custom Links Container */}
+                                    <div className="flex flex-wrap items-center justify-center gap-3">
+                                        {/* Social Icons */}
+                                        {['instagram', 'twitter', 'linkedin', 'youtube'].map((social) => {
+                                            const handle = socials[social as keyof typeof socials];
+                                            if (!handle) return null;
+
+                                            return (
+                                                <a
+                                                    key={social}
+                                                    href={getSocialUrl(social, handle)}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="p-3 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 transition-all duration-300 group hover:border-neon-blue/40 hover:bg-neon-blue/5 hover:text-neon-blue hover:shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]"
+                                                >
+                                                    {getSocialIcon(social)}
+                                                </a>
+                                            );
+                                        })}
+
+                                        {/* Divider if both exist */}
+                                        {(customLinks.length > 0 && ['instagram', 'twitter', 'linkedin', 'youtube'].some(s => socials[s as keyof typeof socials])) && (
+                                            <div className="hidden md:block w-px h-8 bg-zinc-800 mx-2" />
+                                        )}
+
+                                        {/* Custom Links */}
+                                        {customLinks.map((link) => (
+                                            <a
+                                                key={link.id}
+                                                href={link.url}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 transition-all duration-300 group hover:border-neon-blue/40 hover:bg-neon-blue/5 hover:text-neon-blue hover:shadow-[inset_0_0_15px_rgba(34,211,238,0.1)]"
+                                            >
+                                                <span className="text-sm font-medium">{link.label}</span>
+                                                <ArrowUpRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                                             </a>
-                                        )
-                                    }
+                                        ))}
+                                    </div>
                                 </motion.div>
 
                                 {/* STATS BAR */}
@@ -161,125 +235,62 @@ export default function PublicProfile() {
                                 </motion.div>
                             </div>
 
-                            {
-                                loading ?
-                                    (
-                                        <div className="fixed inset-0 flex items-center justify-center">
-                                            <Loader size={40} />
-                                        </div>
-                                    )
-                                    :
-                                    (<>
-                                        {testimonials.length > 0 ?
-                                            (
-                                                <>
-                                                    <div className="max-w-212.5 mx-auto">
-                                                        <motion.div
-                                                            initial={{ opacity: 0 }}
-                                                            animate={{ opacity: 1 }}
-                                                            transition={{ delay: 0.6, duration: 0.8 }}
-                                                            className="flex items-center justify-center gap-4 mb-16"
-                                                        >
-                                                            <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
-                                                            <h2 className="font-display text-lg tracking-widest text-zinc-500 uppercase">What Clients Say</h2>
-                                                            <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
-                                                        </motion.div>
+                            {/* TESTIMONIALS SECTION */}
+                            <div className="max-w-212.5 mx-auto">
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.6, duration: 0.8 }}
+                                    className="flex items-center justify-center gap-4 mb-16"
+                                >
+                                    <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
+                                    <h2 className="font-display text-lg tracking-widest text-zinc-500 uppercase">What Clients Say</h2>
+                                    <div className="h-px bg-linear-to-r from-transparent via-zinc-800 to-transparent flex-1" />
+                                </motion.div>
 
-                                                        {
-                                                            testimonials.length > 6 ?
-                                                                (
-                                                                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
-                                                                        {testimonials.map((testimonial, i) => (
-                                                                            <motion.div
-                                                                                key={testimonial.id}
-                                                                                initial={{ opacity: 0, y: 40 }}
-                                                                                whileInView={{ opacity: 1, y: 0 }}
-                                                                                viewport={{ once: true, margin: "-50px" }}
-                                                                                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                                                                                className="break-inside-avoid mb-6"
-                                                                            >
-                                                                                <div className="group relative">
-                                                                                    {/* Quote decoration - only show on desktop */}
-                                                                                    <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 lg:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none hidden lg:block">
-                                                                                        <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
-                                                                                    </div>
-
-                                                                                    <TestimonialCard
-                                                                                        data={testimonial}
-                                                                                        index={i}
-                                                                                    />
-                                                                                </div>
-                                                                            </motion.div>
-                                                                        ))}
-                                                                    </div>
-                                                                )
-                                                                :
-                                                                (
-                                                                    <div className="space-y-8 md:space-y-12">
-                                                                        {testimonials.map((testimonial, i) => (
-                                                                            <motion.div
-                                                                                key={testimonial.id}
-                                                                                initial={{ opacity: 0, y: 40 }}
-                                                                                whileInView={{ opacity: 1, y: 0 }}
-                                                                                viewport={{ once: true, margin: "-50px" }}
-                                                                                transition={{ duration: 0.8, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-                                                                            >
-                                                                                <div className="group relative">
-                                                                                    <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 md:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none">
-                                                                                        <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
-                                                                                    </div>
-
-                                                                                    <TestimonialCard
-                                                                                        data={testimonial}
-                                                                                        index={i}
-                                                                                    />
-                                                                                </div>
-                                                                            </motion.div>
-                                                                        ))}
-                                                                    </div>
-                                                                )
-                                                        }
-                                                    </div>
-
-                                                    <div className="max-w-xl mx-auto text-center mt-32 pt-20 border-t border-white/5">
-                                                        <div className="inline-flex items-center gap-2 mb-6 opacity-50">
-                                                            <div className="w-5 h-5 rounded bg-zinc-800" />
-                                                            <span className="font-display font-bold text-sm">TestimonialHub</span>
-                                                        </div>
-                                                        <p className="text-zinc-500 text-sm mb-8">
-                                                            Ready to build your own reputation infrastructure?
-                                                        </p>
-                                                        <Button className="rounded-full px-8 bg-zinc-900 border-zinc-800 hover:border-zinc-700">
-                                                            Create your page
-                                                        </Button>
-                                                    </div>
-                                                </>
-                                            )
-                                            :
-                                            (
-                                                <div className="flex flex-col items-center justify-center py-16">
-                                                    <LottieAnimation
-                                                        animationPath="/emptyGhost.json"
-                                                        className="w-96 h-96 mb-6"
-                                                    />
-
-                                                    <h2 className="text-5xl font-bold text-gray-200 mb-2 text-center">
-                                                        Your First Testimonial Awaits
-                                                    </h2>
-
-                                                    <p className="text-zinc-500 text-center max-w-md mb-8">
-                                                        Share your unique link with clients and start building credibility.
-                                                        Every expert started with zero testimonials.
-                                                    </p>
+                                <div className="space-y-8 md:space-y-12">
+                                    {testimonials.map((testimonial, index) => (
+                                        <motion.div
+                                            key={testimonial.id}
+                                            initial={{ opacity: 0, y: 40 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true, margin: "-50px" }}
+                                            transition={{ duration: 0.8, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                                        >
+                                            <div className="group relative">
+                                                {/* Quote mark decoration */}
+                                                <div className="absolute -left-12 -top-8 text-zinc-800 opacity-0 md:group-hover:opacity-50 transition-opacity duration-700 pointer-events-none">
+                                                    <Quote className="w-20 h-20 fill-current transform scale-x-[-1]" />
                                                 </div>
-                                            )
-                                        }
-                                    </>)
-                            }
+
+                                                <TestimonialCard
+                                                    data={testimonial}
+                                                    key={testimonial.id}
+                                                    index={index}
+                                                />
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* FOOTER CTA */}
+                            <div className="max-w-xl mx-auto text-center mt-32 pt-20 border-t border-white/5">
+                                <div className="inline-flex items-center gap-2 mb-6 opacity-50">
+                                    <div className="w-5 h-5 rounded bg-zinc-800" />
+                                    <span className="font-display font-bold text-sm">TestimonialHub</span>
+                                </div>
+                                <p className="text-zinc-500 text-sm mb-8">
+                                    Ready to build your own reputation infrastructure?
+                                </p>
+                                <Button className="rounded-full px-8 bg-zinc-900 border-zinc-800 hover:border-zinc-700">
+                                    Create your page
+                                </Button>
+                            </div>
 
                         </div>
                     )
             }
-        </div >
+        </div>
     );
 };

@@ -106,27 +106,57 @@ export default function ApiDocs() {
 
     const MOCK_RESPONSE = JSON.stringify({
         user: {
-            name: "Alex Design",
-            username: "alex",
-            avatarUrl: "https://picsum.photos/...",
-            tagLine: "Senior Product Designer",
-            customUrl: "https://alex.design",
-            location: "USA",
+            "name": "Pronoy Roy",
+            "userName": "pronoyroy",
+            "avatarUrl": "https://res.cloudinary.com/dixtixxvj/image/upload/v1771602144/testimonialhub/avatars/cqktuwbkrkzxrrhlqlwa.jpg",
+            "tagLine": "I design interactive websites for creators and businesses.",
+            "location": "India",
+            "instagram": "pronoy.devx",
+            "twitter": "royal_maddy_",
+            "youtube": null,
+            "linkedin": "pronoy-roy-3203361b6"
         },
         stats: {
-            totalTestimonials: 24,
-            averageRating: 4.9,
-            verifiedCount: 24
+            "totalTestimonials": 3,
+            "averageRating": 4,
+            "verifiedCount": 3
         },
+        customLinks: [
+            {
+                "label": "Portfolio",
+                "url": "https://www.devpronoy.com/"
+            },
+            {
+                "label": "Behance",
+                "url": "https://www.behance.net/ashgaming12"
+            }
+        ],
         testimonials: [
             {
-                id: "t_123",
-                name: "Sarah Jenkins",
-                company: "Stripe",
-                feedback: "The level of polish in Alex's work is unmatched...",
-                stars: 5,
-                isVerified: true,
-                createdAt: "2023-10-24T10:00:00Z"
+                "id": "69a0a3d28cbfde1d21b6f81c",
+                "name": "Jane Doe",
+                "company": "Company",
+                "avatarUrl": "https://api.dicebear.com/9.x/open-peeps/svg?seed=Jane%20Doe",
+                "feedback": "aikw;bjd;wkadb;akdjba;kdb;awkjdb",
+                "stars": 4,
+                "audioUrl": null,
+                "socialType": "linkedin",
+                "socialLink": "https://www.linkedin.com/in/pronoy-roy-3203361b6/",
+                "isVerified": true,
+                "createdAt": "2026-02-26T19:49:38.198Z"
+            },
+            {
+                "id": "69988335ed68a8e1be874247",
+                "name": "Zennfx",
+                "company": "Video Editor",
+                "avatarUrl": "https://res.cloudinary.com/dixtixxvj/image/upload/v1771602740/testimonialhub/avatars/qeoubuczcybui448z3yk.jpg",
+                "feedback": "Pronoy did an awesome job on my portfolio website. He really got what I needed as a video editor/motion designer and turned it into a clean, modern site that lets my work shine. Communication was easy, revisions were quick, and I’m very happy with the final result. Highly recommend.",
+                "stars": 5,
+                "audioUrl": null,
+                "socialType": "twitter",
+                "socialLink": "https://x.com/Zennfinesse019",
+                "isVerified": true,
+                "createdAt": "2026-02-20T15:52:21.069Z"
             }
         ]
     }, null, 2);
@@ -373,14 +403,27 @@ const MyComponent = () => {
                                             <li>tagLine: String</li>
                                             <li>avatarUrl: String</li>
                                             <li>location: String</li>
+                                            <li>instgram: String</li>
+                                            <li>twitter: String</li>
+                                            <li>linkedin: String</li>
+                                            <li>youtube: String</li>
+                                            
                                         </ul>
                                     </div>
                                     <div>
                                         <span className="text-neon-blue">testimonials</span>: Array&lt;Object&gt;
                                         <ul className="pl-4 border-l border-zinc-800 ml-1 mt-1 space-y-1 text-[13px]">
                                             <li>id: String</li>
-                                            <li>rating: Number (1-5)</li>
-                                            <li>verified: Boolean</li>
+                                            <li>name: String</li>
+                                            <li>company: String</li>
+                                            <li>avatarUrl: String</li>
+                                            <li>feedback: String</li>
+                                            <li>stars: Number (1-5)</li>
+                                            <li>audioUrl: String || null</li>
+                                            <li>socialType: String</li>
+                                            <li>socialLink: String</li>
+                                            <li>isVerified: boolean</li>
+                                            <li>createdAt: Date</li>
                                         </ul>
                                     </div>
                                 </div>

@@ -14,12 +14,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model CustomLink {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  label     String // "Portfolio", "Behance", "GitHub", etc.
+  url       String // "https://devpronoy.com"
+  order     Int // For custom ordering of links in the UI
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 model User {
   id        String  @id @map("_id") // firebase uid
   email     String  @unique
   userName  String  @unique
   tagLine   String? @default("This is my tagline that clients will see")
-  customUrl String?
+  instagram String?
+  twitter   String?
+  youtube   String?
+  linkedin  String?
   name      String
   avatarUrl String?
   location  String? @default("India")
@@ -27,6 +42,7 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   testimonials Testimonial[]
+  customLinks  CustomLink[]
 }
 
 model Testimonial {
