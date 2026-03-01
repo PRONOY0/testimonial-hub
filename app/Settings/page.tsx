@@ -157,7 +157,7 @@ export default function Settings() {
             }, 1500);
         } catch (error: any) {
             console.error('Failed to save:', error);
-            alert(error.response?.data?.error || 'Failed to save settings');
+            showToast.error(error.response?.data?.error || 'Failed to save settings');
         } finally {
             setLoading(false);
         }

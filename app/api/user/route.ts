@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { firebaseAdmin } from "@/lib/firebase-admin";
 import cloudinary from "@/lib/cloudinary";
+import { validateUsername } from "@/lib/validation";
 
 // GET /api/user - Fetch user details
 // PATCH /api/user - Update user details
@@ -35,11 +36,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({
-      user: {
-        ...user,
-      },
-    });
+    return NextResponse.json({ user });
   } catch (error) {
     console.error("Error fetching user by username:", error);
     return NextResponse.json(
@@ -63,9 +60,65 @@ export async function PATCH(req: Request) {
 
     const { uid } = decoded;
 
+    const currentUser = await prisma.user.findUnique({ where: { id: uid } });
+
+    if (!currentUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const body = await req.json();
     const { tagLine, avatarUrl, location, name, userName, links, socials } =
       body;
+
+    //! IF USERNAME IS CHANGING VALIDATE IT
+    if (userName && userName !== currentUser.userName) {
+      //! 1. Checking for valid username
+      const validation = validateUsername(userName);
+      if (!validation.valid) {
+        return NextResponse.json({ error: validation.error }, { status: 400 });
+      }
+
+      //! 2. Check if username is already taken
+      const existingUser = await prisma.user.findUnique({
+        where: { userName: userName.toLowerCase() },
+      });
+
+      if (existingUser && existingUser.id !== uid) {
+        return NextResponse.json(
+          { error: "Username already taken" },
+          { status: 400 },
+        );
+      }
+
+      //! 3. Check if username is in active history (reserved)
+      const activeHistory = await prisma.usernameHistory.findFirst({
+        where: {
+          oldUserName: userName.toLowerCase(),
+          expiresAt: { gte: new Date() },
+        },
+      });
+
+      if (activeHistory) {
+        const daysLeft = Math.ceil(
+          (activeHistory.expiresAt.getTime() - Date.now()) /
+            (24 * 60 * 60 * 1000),
+        );
+
+        return NextResponse.json(
+          { error: `Username reserved. Available in ${daysLeft} days.` },
+          { status: 400 },
+        );
+      }
+
+      //! 4. Save old username to history (only if changing)
+      await prisma.usernameHistory.create({
+        data: {
+          oldUserName: currentUser.userName,
+          expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          userId: uid,
+        },
+      });
+    }
 
     // Upload avatar to Cloudinary if new image provided
     let finalAvatarUrl: string | undefined;
@@ -89,42 +142,25 @@ export async function PATCH(req: Request) {
       }
     }
 
-    const checkUserNameExist = await prisma.user.findUnique({
-      where: { userName: userName },
-    });
-
-    if (checkUserNameExist && checkUserNameExist.id !== uid) {
-      return NextResponse.json(
-        { error: "Username already taken" },
-        { status: 400 },
-      );
-    }
-
-    const userExist = await prisma.user.findUnique({ where: { id: uid } });
-
-    if (!userExist) {
-      return NextResponse.json(
-        {},
-        { status: 404, statusText: "User Doesn't Exist" },
-      );
-    }
-
-    // Update user
+    //! Update user
     const user = await prisma.user.update({
       where: { id: uid },
       data: {
-        name: name || userExist.name,
-        tagLine: tagLine || userExist.tagLine,
-        avatarUrl: finalAvatarUrl || userExist.avatarUrl,
-        userName: userName || userExist.userName,
-        location: location || userExist.location,
-        instagram: socials.instagram || userExist.instagram,
-        linkedin: socials.linkedin || userExist.linkedin,
-        twitter: socials.twitter || userExist.twitter,
-        youtube: socials.youtube || userExist.youtube,
+        name: name || currentUser.name,
+        tagLine: tagLine || currentUser.tagLine,
+        avatarUrl: finalAvatarUrl || currentUser.avatarUrl,
+        userName: userName ? userName.toLowerCase() : currentUser.userName,
+        location: location || currentUser.location,
+        instagram: socials?.instagram || currentUser.instagram,
+        linkedin: socials?.linkedin || currentUser.linkedin,
+        twitter: socials?.twitter || currentUser.twitter,
+        youtube: socials?.youtube || currentUser.youtube,
       },
     });
 
+    let updatedLinks = [];
+
+    //! Update custom links
     if (links && Array.isArray(links) && links.length > 0) {
       await prisma.customLink.deleteMany({
         where: { userId: uid },
@@ -140,8 +176,10 @@ export async function PATCH(req: Request) {
       });
     }
 
-    const updatedLinks = await prisma.customLink.findMany({
-      where: { userId: uid },
+    updatedLinks = await prisma.customLink.findMany({
+      where: {
+        userId: uid,
+      },
       orderBy: { order: "asc" },
     });
 

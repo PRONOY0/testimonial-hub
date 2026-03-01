@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     const decoded = await firebaseAdmin.auth().verifyIdToken(token);
     const { uid, email, name, picture } = decoded;
 
-    if (!email) {
+    if (!token) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
 

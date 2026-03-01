@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -21,10 +21,22 @@ import LottieAnimation from "@/components/LottieAnimation";
 import { cn } from "@/lib/utils";
 import axios from "axios";
 import { postTestimonial } from "@/lib/api";
+import { sanitizeUsername } from "@/lib/validation";
 
 export default function User() {
   const params = useParams();
-  const username = typeof params?.userName === "string" ? params.userName : "Alex";
+  const router = useRouter();
+  const extractedUsername = typeof params?.userName === "string" ? params.userName : "Alex";
+
+  const sanitized = sanitizeUsername(extractedUsername);
+  console.log(sanitized)
+
+  useEffect(() => {
+    if (!sanitized) {
+      router.push("/NotFound")
+    }
+  }, [sanitized, router])
+
 
   const [currentStep, setCurrentStep] = useState<Step>("INTRO");
   const [direction, setDirection] = useState(1);
@@ -137,7 +149,7 @@ export default function User() {
         }
 
         await axios.post(
-          postTestimonial + `${username}`,
+          postTestimonial + `${sanitized}`,
           {
             name: formData.name,
             feedback: formData.feedback,
@@ -220,7 +232,7 @@ export default function User() {
               transition={{ duration: 1, ease: "easeInOut" }}
             >
               {currentStep === "INTRO" && (
-                <IntroStep username={username} onNext={handleNext} />
+                <IntroStep username={sanitized} onNext={handleNext} />
               )}
               {currentStep === "IDENTITY" && (
                 <IdentityStep
@@ -268,7 +280,7 @@ export default function User() {
                 />
               )}
               {currentStep === "SUCCESS" && (
-                <SuccessStep username={username} />
+                <SuccessStep username={sanitized} />
               )}
             </motion.div>
           </AnimatePresence>

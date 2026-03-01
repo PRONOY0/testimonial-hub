@@ -67,10 +67,10 @@ export default function PublicProfile() {
                 console.log(res.data);
 
                 setName(res.data.user.name);
-                setTotalTestimonials(res.data.totalTestimonials);
-                setAvgRating(res.data.avgRating);
+                setTotalTestimonials(res.data.stats.totalTestimonials);
+                setAvgRating(res.data.stats.avgRating);
                 setAvatarUrl(res.data.user.avatarUrl);
-                setVerifiedCount(res.data.verifiedCount);
+                setVerifiedCount(res.data.stats.verifiedCount);
                 setTagline(res.data.user.tagLine);
                 setLocation(res.data.user.location);
 

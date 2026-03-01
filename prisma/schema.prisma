@@ -16,14 +16,25 @@ datasource db {
 
 model CustomLink {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  label     String // "Portfolio", "Behance", "GitHub", etc.
-  url       String // "https://devpronoy.com"
-  order     Int // For custom ordering of links in the UI
+  label     String
+  url       String
+  order     Int
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@index([userId])
+}
+
+model usernameHistory {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  oldUserName String   @unique
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([expiresAt])
 }
 
 model User {
@@ -39,10 +50,11 @@ model User {
   avatarUrl String?
   location  String? @default("India")
 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  testimonials Testimonial[]
-  customLinks  CustomLink[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  testimonials      Testimonial[]
+  customLinks       CustomLink[]
+  usernameHistories usernameHistory[]
 }
 
 model Testimonial {

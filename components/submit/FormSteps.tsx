@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -20,7 +21,7 @@ export const shakeVariant = {
   }
 };
 
-export const IntroStep: React.FC<{ username?: string, onNext: () => void }> = ({ username, onNext }) => (
+export const IntroStep: React.FC<{ username?: string | null, onNext: () => void }> = ({ username, onNext }) => (
   <div className="text-center max-w-xl mx-auto flex flex-col items-center">
     {/* <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
@@ -541,7 +542,7 @@ export const ReviewStep: React.FC<StepProps> = ({ formData, onNext, isSubmitting
   </div>
 );
 
-export const SuccessStep: React.FC<{ username?: string }> = ({ username }) => (
+export const SuccessStep: React.FC<{ username?: string | null }> = ({ username }) => (
   <div className="text-center max-w-xl mx-auto flex flex-col items-center justify-center min-h-[60vh]">
     {/* Success checkmark animation */}
     <div className="relative mb-12">

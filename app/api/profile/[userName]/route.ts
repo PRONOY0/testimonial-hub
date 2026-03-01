@@ -15,49 +15,53 @@ export async function GET(
       );
     }
 
-    //! Find the user by userName
-    const user = await prisma.user.findUnique({
-      where: { userName },
+    //! Find the user by userName in user model
+    let user = await prisma.user.findUnique({
+      where: { userName: userName.toLowerCase() },
+      include: {
+        testimonials: { orderBy: { createdAt: "desc" } },
+        customLinks: { orderBy: { order: "asc" } },
+      },
     });
 
-    if (!user || user.userName !== userName) {
+    //! Find the user by userName in oldUserName model
+
+    if (!user) {
+      const history = await prisma.usernameHistory.findFirst({
+        where: {
+          oldUserName: userName.toLowerCase(),
+          expiresAt: { gte: new Date() },
+        },
+        include: {
+          user: {
+            include: {
+              testimonials: { orderBy: { createdAt: "desc" } },
+              customLinks: { orderBy: { order: "asc" } },
+            },
+          },
+        },
+      });
+
+      if (history) {
+        user = history.user;
+      }
+    }
+
+    //! user doesn't exist in both of the models return 404
+
+    if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    //! Fetch all verified testimonials for this user
-    const testimonials = await prisma.testimonial.findMany({
-      where: {
-        userId: user.id,
-        isVerifiedByOwner: true,
-      },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        company: true,
-        avatarUrl: true,
-        feedback: true,
-        stars: true,
-        audioUrl: true,
-        socialType: true,
-        socialLink: true,
-        isVerifiedByOwner: true,
-        createdAt: true,
-      },
-    });
-
     //! Calculate average rating
-    const totalStars = testimonials.reduce((acc, t) => acc + t.stars, 0);
+    const totalTestimonials = user.testimonials.length;
+    const totalStars = user.testimonials.reduce((acc, t) => acc + t.stars, 0);
     const avgRating =
-      testimonials.length > 0 ? totalStars / testimonials.length : 0;
+      totalTestimonials > 0 ? totalStars / totalTestimonials : 0;
 
-    const verifiedCount = testimonials.filter(
+    const verifiedCount = user.testimonials.filter(
       (t) => t.isVerifiedByOwner,
     ).length;
-
-    const customLinks = await prisma.customLink.findMany({
-      where: { userId: user.id },
-    });
 
     //! Return to frontend
     return NextResponse.json({
@@ -70,11 +74,13 @@ export async function GET(
         location: user.location,
         createdAt: user.createdAt,
       },
-      testimonials,
-      totalTestimonials: testimonials.length,
-      avgRating: parseFloat(avgRating.toFixed(1)),
-      verifiedCount: verifiedCount,
-      customLinks: customLinks,
+      testimonials: user.testimonials,
+      stats: {
+        totalTestimonials: totalTestimonials,
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        verifiedCount: verifiedCount,
+      },
+      customLinks: user.customLinks,
       socials: {
         instagram: user.instagram,
         twitter: user.twitter,

@@ -16,9 +16,25 @@ export async function POST(
       );
     }
 
-    const pageOwner = await prisma.user.findUnique({
-      where: { userName },
+    let pageOwner = await prisma.user.findUnique({
+      where: { userName: userName.toLowerCase() },
     });
+
+    if (!pageOwner) {
+      const history = await prisma.usernameHistory.findFirst({
+        where: {
+          oldUserName: userName.toLowerCase(),
+          expiresAt: { gte: new Date() },
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      if (history) {
+        pageOwner = history.user;
+      }
+    }
 
     if (!pageOwner) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });

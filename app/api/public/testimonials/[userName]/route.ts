@@ -16,19 +16,38 @@ export async function GET(
     }
 
     // Find user by username
-    const user = await prisma.user.findUnique({
-      where: { userName },
+    let user = await prisma.user.findUnique({
+      where: { userName: userName.toLowerCase() },
       include: {
         testimonials: {
           orderBy: { createdAt: "desc" },
         },
+        customLinks: {
+          orderBy: { order: "asc" },
+        },
       },
     });
 
-    const customLinks = await prisma.customLink.findMany({
-      where: { userId: user?.id },
-      orderBy: { order: "asc" },
-    });
+    if (!user) {
+      const history = await prisma.usernameHistory.findFirst({
+        where: {
+          oldUserName: userName.toLowerCase(),
+          expiresAt: { gte: new Date() },
+        },
+        include: {
+          user: {
+            include: {
+              testimonials: { orderBy: { createdAt: "desc" } },
+              customLinks: { orderBy: { order: "asc" } },
+            },
+          },
+        },
+      });
+
+      if (history) {
+        user = history.user;
+      }
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -67,7 +86,7 @@ export async function GET(
           averageRating: Math.round(avgRating * 10) / 10,
           verifiedCount,
         },
-        customLinks: customLinks.map((link) => ({
+        customLinks: user.customLinks.map((link) => ({
           label: link.label,
           url: link.url,
         })),
