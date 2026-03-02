@@ -60,7 +60,7 @@ export const Hero: React.FC = () => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"></span>
               </span>
-              v1.0
+              v2.0
             </div>
 
             <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-[1.1]">
