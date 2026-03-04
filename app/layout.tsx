@@ -33,8 +33,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <Script src ="https://www.googletagmanager.com/gtag/js?id=G-Y3KJ1YVCSE" strategy="afterInteractive" />
+      <body
+        className={`
+          ${manrope.variable}
+          antialiased
+        `}
+      >
+        {/* Google Analytics Script */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-Y3KJ1YVCSE"
+          strategy="afterInteractive"
+        />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -43,19 +52,11 @@ export default function RootLayout({
             gtag('config', 'G-Y3KJ1YVCSE');
           `}
         </Script>
-      </head>
-      <body
-        className={`
-          ${manrope.variable}
-          antialiased
-        `}
-      >
+
         <Analytics />
-        <ClientLayout>
-          {children}
-        </ClientLayout>
+
+        <ClientLayout>{children}</ClientLayout>
       </body>
-      </head>
     </html>
   );
 }
