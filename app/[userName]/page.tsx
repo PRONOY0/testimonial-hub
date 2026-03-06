@@ -29,7 +29,6 @@ export default function User() {
   const extractedUsername = typeof params?.userName === "string" ? params.userName : "Alex";
 
   const sanitized = sanitizeUsername(extractedUsername);
-  console.log(sanitized)
 
   useEffect(() => {
     if (!sanitized) {

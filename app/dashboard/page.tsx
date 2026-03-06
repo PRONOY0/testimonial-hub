@@ -28,7 +28,6 @@ export default function Dashboard() {
     async function getTestimonials() {
       try {
         const res = await axios.get(`${fetchUserTestimonial}`)
-        console.log(res?.data);
         setUserName(res.data.user.userName);
         setName(res.data.user.name);
         setTotalTestimonials(res.data.stats.totalTestimonials);

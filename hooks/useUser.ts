@@ -39,7 +39,6 @@ export function useUser() {
 
           const res = await axios.get("/api/user");
           setDbUser(res.data.user);
-          console.log(res.data.user);
         } catch (error) {
           console.error("Failed to fetch user data:", error);
           setDbUser(null); // Reset on error

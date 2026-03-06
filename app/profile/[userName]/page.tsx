@@ -64,7 +64,6 @@ export default function PublicProfile() {
         async function fetchUser() {
             try {
                 const res = await axios.get(getuser + `${username}`);
-                console.log(res.data);
 
                 setName(res.data.user.name);
                 setTotalTestimonials(res.data.stats.totalTestimonials);

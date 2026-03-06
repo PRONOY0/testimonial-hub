@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ import axios from 'axios';
 import { websiteUrl } from '@/lib/api';
 import { Button } from '@/components/ui/Button';
 import { CustomLink } from '@/types/types';
+import { Loader } from '@/components/Loader';
 
 export default function Settings() {
     const [usernameWarning, setUsernameWarning] = useState(false);
@@ -57,10 +59,6 @@ export default function Settings() {
                     linkedin: res.data.user.linkedin || '',
                 })
                 setCustomLinks(res.data.user.customLinks || []);
-
-
-                console.log("Printing user data:");
-                console.log(res);
 
             } catch (error) {
                 console.log(`Error:${error}`)
@@ -173,7 +171,7 @@ export default function Settings() {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-2"
                 >
-                    <h1 className="text-4xl font-display font-medium tracking-tight">Settings</h1>
+                    <h1 className="text-4xl font-display font-medium tracking-tight">Profile Settings</h1>
                     <p className="text-zinc-400">Manage your profile and public presence.</p>
                 </motion.div>
 
@@ -185,7 +183,7 @@ export default function Settings() {
                     className="space-y-8"
                 >
                     <div className="flex items-center gap-4 border-b border-zinc-900 pb-2">
-                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Identity</h2>
+                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Personal Identity</h2>
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -312,7 +310,7 @@ export default function Settings() {
                     className="space-y-8"
                 >
                     <div className="flex items-center gap-4 border-b border-zinc-900 pb-2">
-                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Social Presence</h2>
+                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Connect With Me</h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -349,7 +347,7 @@ export default function Settings() {
                     className="space-y-8"
                 >
                     <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
-                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Custom Links</h2>
+                        <h2 className="text-sm font-mono text-zinc-500 uppercase tracking-wider">Featured Links</h2>
                         <button
                             onClick={addCustomLink}
                             className="text-xs flex items-center gap-1 text-neon-blue hover:text-white transition-colors"
@@ -413,8 +411,12 @@ export default function Settings() {
                     className="flex items-center justify-end pt-8 border-t border-zinc-900"
                 >
                     <Button onClick={handleSave} disabled={loading}>
-                        <Save className="w-4 h-4" />
-                        <span>Save Changes</span>
+                        <Save className={`w-4 h-4 ${saved ? "hidden" : "block"}`} />
+                        <span>
+                            {
+                                saved ? <Loader /> : "Save Changes"
+                            }
+                        </span>
                     </Button>
                 </motion.div>
 
