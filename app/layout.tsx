@@ -14,18 +14,53 @@ const manrope = Manrope({
 
 
 export const metadata: Metadata = {
-  title: "Testimonial Hub",
-  description: "A platform to share and discover testimonials.",
-  openGraph: {
-    title: "Testimonial Hub",
-    description: "A platform to share and discover testimonials.",
-    images: [],
+  metadataBase: new URL("https://testimonial-hub-five.vercel.app/"),
+
+  title: "Testimonial Hub | Real Customer Reviews & Testimonials",
+
+  description:
+    "Discover real customer testimonials, share your experiences, and explore trusted reviews from users worldwide.",
+
+  applicationName: "Testimonial Hub",
+
+  alternates: {
+    canonical: "/",
   },
+
+  icons: {
+    icon: "/favicon.ico",
+  },
+
+  openGraph: {
+    title: "Testimonial Hub | Real Customer Reviews & Testimonials",
+    description:
+      "Explore authentic testimonials and share your experiences with our growing community.",
+    url: "https://testimonial-hub-five.vercel.app/",
+    siteName: "Testimonial Hub",
+    images: [
+      {
+        url: "/Testimonial.png",
+        width: 1200,
+        height: 630,
+        alt: "Testimonial Hub",
+      },
+    ],
+    type: "website",
+  },
+
   twitter: {
-    card: "summary"
+    card: "summary_large_image",
+    title: "Testimonial Hub",
+    description:
+      "Discover and share authentic testimonials from real users.",
+    images: ["/Testimonial.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
   },
 };
-
 export default function RootLayout({
   children,
 }: {
