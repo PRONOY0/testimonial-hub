@@ -12,14 +12,20 @@ const manrope = Manrope({
   display: "swap",
 });
 
+export const viewport = {
+  themeColor: "#5fc8f1",
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://testimonial-hub-five.vercel.app/"),
 
-  title: "Testimonial Hub | Real Customer Reviews & Testimonials",
+  title: {
+    default: "Testimonial Hub - Premium Portfolio & Feedback Manager",
+    template: "%s | Testimonial Hub",
+  },
 
   description:
-    "Discover real customer testimonials, share your experiences, and explore trusted reviews from users worldwide.",
+    "The premium platform for capturing, organizing, and displaying client testimonials and portfolios.",
 
   applicationName: "Testimonial Hub",
 
@@ -28,7 +34,7 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/favicon.ico",
+    icon: "/Dots.ico",
   },
 
   openGraph: {
