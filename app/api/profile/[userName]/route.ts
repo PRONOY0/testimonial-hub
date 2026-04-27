@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import client from "../../client";
+import { cookies } from "next/headers";
+import { firebaseAdmin } from "@/lib/firebase-admin";
 
 export async function GET(
   req: Request,
@@ -13,6 +16,43 @@ export async function GET(
         { error: "Username is required" },
         { status: 400 },
       );
+    }
+
+    const session = (await cookies()).get("session")?.value;
+
+    if (!session) {
+      return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
+    }
+
+    const sessionCacheKey = `session:${session}`;
+    const cachedSession = await client.get(sessionCacheKey);
+    let uid: string | undefined;
+
+    if (cachedSession) {
+      try {
+        const parsed = JSON.parse(cachedSession);
+
+        uid = parsed?.uid;
+      } catch (error) {
+        console.log(error);
+        uid = undefined;
+      }
+    } else {
+      const decoded = await firebaseAdmin
+        .auth()
+        .verifySessionCookie(session!, true);
+
+      uid = decoded.uid;
+
+      await client.setex(sessionCacheKey, 60 * 60 * 24 * 7, JSON.stringify({ uid }));
+    }
+
+    const userCacheKey = `user:${uid}:profile`;
+
+    const userCachedData = await client.get(userCacheKey);
+
+    if (userCachedData) {
+      return NextResponse.json(JSON.parse(userCachedData));
     }
 
     //! Find the user by userName in user model
@@ -63,8 +103,7 @@ export async function GET(
       (t) => t.isVerifiedByOwner,
     ).length;
 
-    //! Return to frontend
-    return NextResponse.json({
+    const responseData = {
       user: {
         id: user.id,
         name: user.name,
@@ -77,7 +116,7 @@ export async function GET(
       testimonials: user.testimonials,
       stats: {
         totalTestimonials: totalTestimonials,
-        avgRating: parseFloat(avgRating.toFixed(1)),
+        avgRating: avgRating ? parseFloat(avgRating.toFixed(1)) : 0,
         verifiedCount: verifiedCount,
       },
       customLinks: user.customLinks,
@@ -87,7 +126,16 @@ export async function GET(
         linkedin: user.linkedin,
         youtube: user.youtube,
       },
-    });
+    };
+
+    await client.setex(
+      userCacheKey,
+      60 * 60 * 24 * 7,
+      JSON.stringify(responseData),
+    );
+
+    //! Return to frontend
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(

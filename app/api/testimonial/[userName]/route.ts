@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
+import client from "../../client";
 
 export async function POST(
   req: Request,
@@ -39,6 +40,12 @@ export async function POST(
     if (!pageOwner) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
+
+    const cacheKey_Profile = `user:${pageOwner.id}:profile`;
+    const cacheKey_Dashboard = `user:${pageOwner.id}:dashboard`;
+
+    await client.del(cacheKey_Profile);
+    await client.del(cacheKey_Dashboard);
 
     const body = await req.json();
     const {

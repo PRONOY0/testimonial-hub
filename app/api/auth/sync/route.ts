@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { firebaseAdmin } from "@/lib/firebase-admin";
 import { prisma } from "@/lib/prisma";
+import client from "../../client";
 
 async function generateUniqueUsername(name: string) {
   const base = name.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -29,49 +30,61 @@ export async function POST(req: Request) {
     }
 
     const token = authHeader.split("Bearer ")[1];
-    const decoded = await firebaseAdmin.auth().verifyIdToken(token);
-    const { uid, email, name, picture } = decoded;
 
     if (!token) {
       return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
 
+    const decoded = await firebaseAdmin.auth().verifyIdToken(token);
+
+    const retrievedUid = decoded.uid;
+
+    const userCacheKey = `user:${retrievedUid}`;
+
+    const userCachedData = await client.get(userCacheKey);
+
+    if (userCachedData) {
+      return NextResponse.json(JSON.parse(userCachedData));
+    }
+
+    const firebase_vals = {
+      email: decoded.email || "",
+      name: decoded.name || "",
+      picture: decoded.picture || "",
+    };
+
     const existingUser = await prisma.user.findUnique({
-      where: { id: uid },
+      where: { id: retrievedUid },
     });
 
     const userName = existingUser
       ? existingUser.userName
-      : await generateUniqueUsername(name ?? email?.split("@")[0]);
+      : await generateUniqueUsername(
+          firebase_vals.name || firebase_vals.email?.split("@")[0],
+        );
 
-    if (!email) {
-      return NextResponse.json(
-        {
-          error: "Invalid token",
-        },
-        {
-          status: 400,
-        },
-      );
+    if (!firebase_vals.email) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
     }
 
     const user = await prisma.user.upsert({
-      where: { id: uid },
+      where: { id: retrievedUid },
       update: {
-        email,
-        ...((!existingUser?.name || existingUser.name === name) && {
-          name,
+        email: firebase_vals.email,
+        ...((!existingUser?.name ||
+          existingUser.name === firebase_vals.name) && {
+          name: firebase_vals.name,
         }),
         ...((!existingUser?.avatarUrl ||
-          existingUser.avatarUrl === picture) && {
-          avatarUrl: picture,
+          existingUser.avatarUrl === firebase_vals.picture) && {
+          avatarUrl: firebase_vals.picture,
         }),
       },
       create: {
-        id: uid,
-        name: name,
-        email: email,
-        avatarUrl: picture,
+        id: retrievedUid,
+        name: firebase_vals.name,
+        email: firebase_vals.email,
+        avatarUrl: firebase_vals.picture,
         userName,
       },
     });
@@ -79,6 +92,12 @@ export async function POST(req: Request) {
     //? ...((condtion) && { field: value }) is a way to conditionally include fields in an object. If the condition is true, the field will be included with the specified value; if false, it will be omitted entirely from the object.
 
     const response = NextResponse.json({ user });
+
+    await client.setex(
+      userCacheKey,
+      60 * 60 * 24 * 7,
+      JSON.stringify({ user }),
+    );
 
     const expiresIn = 60 * 60 * 24 * 7 * 1000;
     const sessionCookie = await firebaseAdmin

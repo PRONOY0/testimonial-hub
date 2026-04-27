@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { firebaseAdmin } from "@/lib/firebase-admin";
 import { cookies } from "next/headers";
+import client from "../../client";
 
 export async function GET(req: Request) {
   try {
@@ -12,11 +13,43 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Not Authorized" }, { status: 401 });
     }
 
-    const decoded = await firebaseAdmin
-      .auth()
-      .verifySessionCookie(session, true);
+    const sessionCacheKey = `session:${session}`;
+    const cachedSession = await client.get(sessionCacheKey);
 
-    const { uid } = decoded;
+    let uid: string | undefined;
+
+    if (cachedSession) {
+      try {
+        const parsed = JSON.parse(cachedSession);
+
+        uid = parsed?.uid;
+      } catch (error) {
+        console.log(error);
+        uid = undefined;
+      }
+    } else {
+      const decoded = await firebaseAdmin
+        .auth()
+        .verifySessionCookie(session!, true);
+
+      uid = decoded.uid;
+
+      await client.setex(sessionCacheKey, 60 * 60 * 24 * 7, JSON.stringify({ uid }));
+    }
+
+    const cacheKey = `user:${uid}:dashboard`;
+
+    console.log(cacheKey);
+
+    const cachedData = await client.get(cacheKey);
+
+    if (cachedData) {
+      return NextResponse.json(JSON.parse(cachedData));
+    }
+
+    if (!uid) {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+    }
 
     const userExist = await prisma.user.findUnique({
       where: { id: uid },
@@ -45,13 +78,13 @@ export async function GET(req: Request) {
       (t) => t.isVerifiedByOwner,
     ).length;
 
-    return NextResponse.json({
+    const responseData = {
       user: {
         id: userExist.id,
         name: userExist.name,
-        email: userExist.email,
+        // email: userExist.email,
         userName: userExist.userName,
-        location: userExist.location,
+        // location: userExist.location,
         avatarUrl: userExist.avatarUrl,
       },
       stats: {
@@ -60,10 +93,14 @@ export async function GET(req: Request) {
         avgRating: Number(avgRating.toFixed(1)),
       },
       testimonials: testimonials,
-    });
+    };
+
+    await client.setex(cacheKey, 60 * 60 * 24 * 7, JSON.stringify(responseData)); 
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Auth sync error: at /me", error);
 
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: error }, { status: 401 });
   }
 }

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { firebaseAdmin } from "@/lib/firebase-admin";
 import cloudinary from "@/lib/cloudinary";
 import { validateUsername } from "@/lib/validation";
+import client from "../client";
 
 // GET /api/user - Fetch user details
 // PATCH /api/user - Update user details
@@ -16,11 +17,42 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = await firebaseAdmin
-      .auth()
-      .verifySessionCookie(cookie, true);
+    const cacheKey = `session:${cookie}`;
 
-    const { uid } = decoded;
+    const cachedData = await client.get(cacheKey);
+    let uid: string | undefined;
+
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        uid = parsed?.uid;
+      } catch (error) {
+        console.log(error);
+        uid = undefined;
+      }
+    } else {
+      const decoded = await firebaseAdmin
+        .auth()
+        .verifySessionCookie(cookie, true);
+
+      uid = decoded.uid;
+
+      await client.setex(cacheKey, 60 * 60 * 24 * 7, JSON.stringify({ uid }));
+    }
+
+    if (!uid) {
+      return NextResponse.json({ message: "UID not Found" }, { status: 401 });
+    }
+
+    const cacheUserKey = `user:${uid}:settings`;
+
+    const cacheUserData = await client.get(cacheUserKey);
+
+    if (cacheUserData) {
+      return NextResponse.json({
+        user: JSON.parse(cacheUserData),
+      });
+    }
 
     // Fetch user from DB
     const user = await prisma.user.findUnique({
@@ -35,6 +67,8 @@ export async function GET(req: Request) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    await client.setex(cacheUserKey, 60 * 60 * 24 * 7, JSON.stringify(user));
 
     return NextResponse.json({ user });
   } catch (error) {
@@ -54,11 +88,42 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const decoded = await firebaseAdmin
-      .auth()
-      .verifySessionCookie(cookie, true);
+    const cacheKey = `session:${cookie}`;
 
-    const { uid } = decoded;
+    const cachedData = await client.get(cacheKey);
+    let uid: string | undefined;
+
+    if (cachedData) {
+      try {
+        const parsed = JSON.parse(cachedData);
+        uid = parsed?.uid;
+      } catch (error) {
+        console.log(error);
+        uid = undefined;
+      }
+    } else {
+      const decoded = await firebaseAdmin
+        .auth()
+        .verifySessionCookie(cookie, true);
+
+      uid = decoded.uid;
+
+      await client.setex(cacheKey, 60 * 60 * 24 * 7, JSON.stringify({ uid }));
+    }
+
+    if (!uid) {
+      return NextResponse.json({ message: "UID not Found" }, { status: 401 });
+    }
+
+    const cacheSettingKey = `user:${uid}:settings`;
+    const cacheKey_Profile = `user:${uid}:profile`;
+    const cacheKey_Dashboard = `user:${uid}:dashboard`;
+    const cacheAuth = `user:${uid}`;
+
+    await client.del(cacheAuth);
+    await client.del(cacheKey_Profile);
+    await client.del(cacheSettingKey);
+    await client.del(cacheKey_Dashboard);
 
     const currentUser = await prisma.user.findUnique({ where: { id: uid } });
 
