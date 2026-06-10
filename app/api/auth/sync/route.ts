@@ -41,6 +41,8 @@ export async function POST(req: Request) {
 
     const userCacheKey = `user:${retrievedUid}`;
 
+    await client.del(`user:${retrievedUid}`);
+
     const userCachedData = await client.get(userCacheKey);
 
     if (userCachedData) {
