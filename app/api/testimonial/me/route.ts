@@ -34,7 +34,11 @@ export async function GET(req: Request) {
 
       uid = decoded.uid;
 
-      await client.setex(sessionCacheKey, 60 * 60 * 24 * 7, JSON.stringify({ uid }));
+      await client.setex(
+        sessionCacheKey,
+        60 * 60 * 24 * 7,
+        JSON.stringify({ uid }),
+      );
     }
 
     const cacheKey = `user:${uid}:dashboard`;
@@ -95,12 +99,21 @@ export async function GET(req: Request) {
       testimonials: testimonials,
     };
 
-    await client.setex(cacheKey, 60 * 60 * 24 * 7, JSON.stringify(responseData)); 
+    await client.setex(
+      cacheKey,
+      60 * 60 * 24 * 7,
+      JSON.stringify(responseData),
+    );
 
     return NextResponse.json(responseData);
   } catch (error) {
-    console.error("Auth sync error: at /me", error);
+    console.error("GET /api/testimonial/me", error);
 
-    return NextResponse.json({ error: error }, { status: 401 });
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
+    );
   }
 }
