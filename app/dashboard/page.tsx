@@ -40,7 +40,7 @@ export default function Dashboard() {
         setLoading(false);
       } catch (error) {
         const err = error as unAuthorizedError;
-        console.log(err.status);
+        console.error(err.status);
         if (err.status === 401) {
           SetStatus('unauthorized');
           setLoading(false);

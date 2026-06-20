@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
 import client from "../../client";
+import { resend } from "@/lib/resend";
+import { newTestimonialEmail } from "@/lib/emails/new-testimonial";
 
 export async function POST(
   req: Request,
@@ -127,6 +129,25 @@ export async function POST(
         isVerifiedByOwner,
       },
     });
+
+    if (pageOwner.email) {
+      resend.emails
+        .send({
+          from: "TestimonialHub <testimonialhub@devpronoy.com>",
+          to: pageOwner.email,
+          subject: `New testimonial from ${name} ⭐`,
+          html: newTestimonialEmail({
+            ownerName: pageOwner.userName,
+            testimonialName: name,
+            feedback,
+            stars,
+            avatarUrl: finalAvatarUrl,
+            company,
+            dashboardUrl: `https://yourdomain.com/dashboard`,
+          }),
+        })
+        .catch((err) => console.error("Resend email failed:", err));
+    }
 
     return NextResponse.json({ testimonial }, { status: 201 });
   } catch (error) {

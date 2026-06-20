@@ -61,7 +61,7 @@ export default function Settings() {
                 setCustomLinks(res.data.user.customLinks || []);
 
             } catch (error) {
-                console.log(`Error:${error}`)
+                console.error(`Error:${error}`)
             }
         }
 

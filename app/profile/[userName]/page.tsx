@@ -86,7 +86,7 @@ export default function PublicProfile() {
 
                 setLoading(false);
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 const err = error as unAuthorizedError;
                 if (err.status === 404) {
                     window.location.href = '/NotFound';
