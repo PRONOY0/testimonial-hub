@@ -34,7 +34,7 @@ export async function GET(
 
         uid = parsed?.uid;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         uid = undefined;
       }
     } else {

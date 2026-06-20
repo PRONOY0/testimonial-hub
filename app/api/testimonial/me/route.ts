@@ -24,7 +24,7 @@ export async function GET(req: Request) {
 
         uid = parsed?.uid;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         uid = undefined;
       }
     } else {
@@ -42,8 +42,6 @@ export async function GET(req: Request) {
     }
 
     const cacheKey = `user:${uid}:dashboard`;
-
-    console.log(cacheKey);
 
     const cachedData = await client.get(cacheKey);
 

@@ -96,7 +96,8 @@ export async function POST(req: Request) {
     return response;
   } catch (error) {
     console.error("Auth sync error:", error);
-    const msg = error instanceof Error ? error.message : "Internal Server Error";
+    const msg =
+      error instanceof Error ? error.message : "Internal Server Error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

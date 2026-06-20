@@ -27,7 +27,7 @@ export async function GET(req: Request) {
         const parsed = JSON.parse(cachedData);
         uid = parsed?.uid;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         uid = undefined;
       }
     } else {
@@ -98,7 +98,7 @@ export async function PATCH(req: Request) {
         const parsed = JSON.parse(cachedData);
         uid = parsed?.uid;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         uid = undefined;
       }
     } else {
@@ -263,7 +263,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    console.log(error);
+    console.error(error);
 
     return NextResponse.json(
       { error: "Internal server error" },
